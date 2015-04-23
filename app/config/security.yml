@@ -45,11 +45,11 @@ security:
             anonymous: ~
             #http_basic:
             #    realm: "Secured Demo Area"
-#        wsse_secured:
-#            pattern:    /api/v1/campaigns.*
-#            stateless:  true
-#            wsse:       true
-#            anonymous:  false
+        wsse_secured:
+            pattern:    /api/v1/redeemItems
+            stateless:  true
+            wsse:       true
+            anonymous:  false
         # tasks should not be accesible unless logged in / authenticated
 #        wsse_secured_tasks:
 #            pattern:    /api/v1/tasks.*

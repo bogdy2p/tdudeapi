@@ -6,7 +6,7 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Config\Definition\Exception\Exception;
-use TimeDude\Bundle\UserBundle\Entity\User;
+use TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser;
 
 class LoadTestUserData extends AbstractFixture implements OrderedFixtureInterface {
 
@@ -16,7 +16,7 @@ class LoadTestUserData extends AbstractFixture implements OrderedFixtureInterfac
 
     public function load(ObjectManager $manager) {
 
-        $user = new User();
+        $user = new TimeDudeUser();
 
         $user->setGoogleUid('110701299456394365841');
         $user->setFirstname('fIrStNaMe');

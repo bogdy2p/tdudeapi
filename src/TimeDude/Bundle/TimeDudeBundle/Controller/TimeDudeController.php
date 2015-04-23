@@ -43,7 +43,7 @@ class TimeDudeController extends FOSRestController {
     public function getUserexistsAction($userId) {
 
 
-        $user = $this->getDoctrine()->getRepository('UserBundle:User')->findOneByGoogleUid($userId);
+        $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
         $response = new Response();
 
 
@@ -104,7 +104,7 @@ class TimeDudeController extends FOSRestController {
             )));
             return $response;
         }
-        $user = $this->getDoctrine()->getRepository('UserBundle:User')->findOneByGoogleUid($userId);
+        $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
 
         if (!$user) {
             $response->setStatusCode(400);
@@ -114,10 +114,6 @@ class TimeDudeController extends FOSRestController {
             )));
             return $response;
         }
-
-
-
-
 
 
         $type = 'coin';
@@ -157,7 +153,7 @@ class TimeDudeController extends FOSRestController {
      */
     public function getUserInformationAction($userId) {
 
-        $user = $this->getDoctrine()->getRepository('UserBundle:User')->findOneByGoogleUid($userId);
+        $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
 
         $user_information = array();
 
@@ -170,9 +166,6 @@ class TimeDudeController extends FOSRestController {
             }
             $user_information['value'] = $reward_value;
         }
-//        print_r($user_information);
-//
-//        die();
 
         $response = new Response();
         $response->setStatusCode(200);

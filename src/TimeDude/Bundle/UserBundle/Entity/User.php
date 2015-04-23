@@ -1,10 +1,7 @@
 <?php
-
 namespace TimeDude\Bundle\UserBundle\Entity;
-
 // For extending FOSUserBundle:
-//use FOS\UserBundle\Entity\User as BaseUser;
-//use Symfony\Component\Security\Core\User\User as BaseUser;
+use FOS\UserBundle\Entity\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 // For setting validation constraints:
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,45 +11,34 @@ use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
-
 /**
  * @ORM\Entity(repositoryClass="TimeDude\Bundle\UserBundle\Entity\UserRepository")
- * @ORM\Table(name="Users")
+ * @ORM\Table(name="Api_User")
  * @ExclusionPolicy("all");
  */
-class User {
-
+class User extends BaseUser {
     public function __construct() {
-
-        $this->rewards = new ArrayCollection();
+        parent::__construct();
+    
     }
-
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+    /**
+     * @ORM\Column(type="string", name="api_key", nullable=true)
+     */
+    protected $apiKey;
 
     /**
-     * @ORM\Column(type="string", name="googleUid", nullable=false)
+     * @ORM\Column(type="string", name="name", nullable=true)
      */
-    protected $googleUid;
-
+    private $name;
     /**
-     * @ORM\Column(type="string", name="firstname", nullable=true)
+     * @ORM\Column(type="string", name="title", nullable=true)
      */
-    protected $firstname;
-
-    /**
-     * @ORM\Column(type="string", name="lastname", nullable=true)
-     */
-    private $lastname;
-
-    /**
-     * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Reward", mappedBy="user")
-     */
-    private $rewards;
 
 
     /**
@@ -66,104 +52,48 @@ class User {
     }
 
     /**
-     * Set googleUid
+     * Set apiKey
      *
-     * @param string $googleUid
+     * @param string $apiKey
      * @return User
      */
-    public function setGoogleUid($googleUid)
+    public function setApiKey($apiKey)
     {
-        $this->googleUid = $googleUid;
+        $this->apiKey = $apiKey;
 
         return $this;
     }
 
     /**
-     * Get googleUid
+     * Get apiKey
      *
      * @return string 
      */
-    public function getGoogleUid()
+    public function getApiKey()
     {
-        return $this->googleUid;
+        return $this->apiKey;
     }
 
     /**
-     * Set firstname
+     * Set name
      *
-     * @param string $firstname
+     * @param string $name
      * @return User
      */
-    public function setFirstname($firstname)
+    public function setName($name)
     {
-        $this->firstname = $firstname;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get firstname
+     * Get name
      *
      * @return string 
      */
-    public function getFirstname()
+    public function getName()
     {
-        return $this->firstname;
-    }
-
-    /**
-     * Set lastname
-     *
-     * @param string $lastname
-     * @return User
-     */
-    public function setLastname($lastname)
-    {
-        $this->lastname = $lastname;
-
-        return $this;
-    }
-
-    /**
-     * Get lastname
-     *
-     * @return string 
-     */
-    public function getLastname()
-    {
-        return $this->lastname;
-    }
-
-    /**
-     * Add rewards
-     *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards
-     * @return User
-     */
-    public function addReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards)
-    {
-        $this->rewards[] = $rewards;
-
-        return $this;
-    }
-
-    /**
-     * Remove rewards
-     *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards
-     */
-    public function removeReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards)
-    {
-        $this->rewards->removeElement($rewards);
-    }
-
-    /**
-     * Get rewards
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getRewards()
-    {
-        return $this->rewards;
+        return $this->name;
     }
 }
