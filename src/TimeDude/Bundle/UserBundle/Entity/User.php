@@ -1,4 +1,4 @@
-<?php
+<?php //
 
 namespace TimeDude\Bundle\UserBundle\Entity;
 
@@ -32,29 +32,6 @@ class User extends BaseUser {
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-
-    /**
-     * @ORM\Column(type="string", name="api_key", nullable=true)
-     */
-    protected $apiKey;
-
-    
-    /**
-     * @ORM\Column(type="string", name="honey_id", nullable=true)
-     */
-    protected $honeyid;
-
-    
-    /**
-     * @ORM\Column(type="string", name="honey_uuid", nullable=true)
-     */
-    protected $honeyuuid;
-
-    /**
-     * @ORM\Column(type="string", name="honey_refresh_token", nullable=true)
-     */
-    protected $honeyRefreshToken;
-    
     
     /**
      * @ORM\Column(type="string", name="firstname", nullable=true)
@@ -65,26 +42,11 @@ class User extends BaseUser {
      * @ORM\Column(type="string", name="lastname", nullable=true)
      */
     private $lastname;
-
-    /**
-     * @ORM\Column(type="string", name="title", nullable=true)
-     */
-    protected $title;
-
-    /**
-     * @ORM\Column(type="string", name="office", nullable=true)
-     */
-    protected $office;
-
+    
     /**
      * @ORM\Column(type="string", name="phone", nullable=true)
      */
     protected $phone;
-
-    /**
-     * @ORM\Column(type="string", name="profilepicture", nullable=true)
-     */
-    protected $profilepicture;
 
     /**
      * @ORM\Column(type="datetime" , name="created_at")
