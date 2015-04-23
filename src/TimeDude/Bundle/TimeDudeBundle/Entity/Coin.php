@@ -3,11 +3,12 @@
 namespace TimeDude\Bundle\TimeDudeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use TimeDude\Bundle\UserBundle\Entity\User;
 
 /**
  * Coin
  *
- * @ORM\Table()
+ * @ORM\Table(name="Coins")
  * @ORM\Entity(repositoryClass="TimeDude\Bundle\TimeDudeBundle\Entity\CoinRepository")
  */
 class Coin
@@ -20,13 +21,6 @@ class Coin
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="user_id", type="integer")
-     */
-    private $userId;
 
     /**
      * @var integer
@@ -51,6 +45,16 @@ class Coin
 
 
     /**
+     * @var User
+     * 
+     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\UserBundle\Entity\User", inversedBy="coins")
+     * @ORM\JoinColumn(name="user_id",referencedColumnName="id")
+     * 
+     */
+     protected $user;
+    
+
+    /**
      * Get id
      *
      * @return integer 
@@ -58,29 +62,6 @@ class Coin
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set userId
-     *
-     * @param integer $userId
-     * @return Coin
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    /**
-     * Get userId
-     *
-     * @return integer 
-     */
-    public function getUserId()
-    {
-        return $this->userId;
     }
 
     /**
@@ -150,5 +131,28 @@ class Coin
     public function getDate()
     {
         return $this->date;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \TimeDude\Bundle\UserBundle\Entity\User $user
+     * @return Coin
+     */
+    public function setUser(\TimeDude\Bundle\UserBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \TimeDude\Bundle\UserBundle\Entity\User 
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }

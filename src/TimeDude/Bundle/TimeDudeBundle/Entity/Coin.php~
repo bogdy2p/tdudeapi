@@ -1,0 +1,56 @@
+<?php
+
+namespace TimeDude\Bundle\TimeDudeBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use TimeDude\Bundle\UserBundle\Entity\User;
+
+/**
+ * Coin
+ *
+ * @ORM\Table(name="Coins")
+ * @ORM\Entity(repositoryClass="TimeDude\Bundle\TimeDudeBundle\Entity\CoinRepository")
+ */
+class Coin
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="game_id", type="integer")
+     */
+    private $gameId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="ammount", type="integer")
+     */
+    private $ammount;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date", type="datetime")
+     */
+    private $date;
+
+
+    /**
+     * @var User
+     * 
+     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\UserBundle\Entity\User", inversedBy="coins")
+     * @ORM\JoinColumn(name="user_id",referencedColumnName="id")
+     * 
+     */
+     protected $user;
+    
+}
