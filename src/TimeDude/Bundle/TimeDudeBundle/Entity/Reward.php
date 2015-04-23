@@ -3,7 +3,7 @@
 namespace TimeDude\Bundle\TimeDudeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use TimeDude\Bundle\UserBundle\Entity\User;
+use TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser;
 
 /**
  * Reward
@@ -46,7 +46,7 @@ class Reward {
     /**
      * @var User
      * 
-     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\UserBundle\Entity\User", inversedBy="rewards")
+     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser", inversedBy="rewards")
      * @ORM\JoinColumn(name="user_id",referencedColumnName="id")
      * 
      */
@@ -60,12 +60,15 @@ class Reward {
      */
     private $rewardtype;
 
+   
+
     /**
      * Get id
      *
      * @return integer 
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -75,7 +78,8 @@ class Reward {
      * @param integer $gameId
      * @return Reward
      */
-    public function setGameId($gameId) {
+    public function setGameId($gameId)
+    {
         $this->gameId = $gameId;
 
         return $this;
@@ -86,7 +90,8 @@ class Reward {
      *
      * @return integer 
      */
-    public function getGameId() {
+    public function getGameId()
+    {
         return $this->gameId;
     }
 
@@ -96,7 +101,8 @@ class Reward {
      * @param integer $ammount
      * @return Reward
      */
-    public function setAmmount($ammount) {
+    public function setAmmount($ammount)
+    {
         $this->ammount = $ammount;
 
         return $this;
@@ -107,7 +113,8 @@ class Reward {
      *
      * @return integer 
      */
-    public function getAmmount() {
+    public function getAmmount()
+    {
         return $this->ammount;
     }
 
@@ -117,7 +124,8 @@ class Reward {
      * @param \DateTime $date
      * @return Reward
      */
-    public function setDate($date) {
+    public function setDate($date)
+    {
         $this->date = $date;
 
         return $this;
@@ -128,17 +136,19 @@ class Reward {
      *
      * @return \DateTime 
      */
-    public function getDate() {
+    public function getDate()
+    {
         return $this->date;
     }
 
     /**
      * Set user
      *
-     * @param \TimeDude\Bundle\UserBundle\Entity\User $user
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $user
      * @return Reward
      */
-    public function setUser(\TimeDude\Bundle\UserBundle\Entity\User $user = null) {
+    public function setUser(\TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $user = null)
+    {
         $this->user = $user;
 
         return $this;
@@ -147,12 +157,12 @@ class Reward {
     /**
      * Get user
      *
-     * @return \TimeDude\Bundle\UserBundle\Entity\User 
+     * @return \TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser 
      */
-    public function getUser() {
+    public function getUser()
+    {
         return $this->user;
     }
-
 
     /**
      * Set rewardtype

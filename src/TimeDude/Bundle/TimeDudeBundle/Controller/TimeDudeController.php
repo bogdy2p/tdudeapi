@@ -95,7 +95,9 @@ class TimeDudeController extends FOSRestController {
         $gameId = $request->get('gameId');
         $itemId = $request->get('itemId');
         $ammount = $request->get('ammount');
-
+        $type = 'coin';
+        
+        
         if (empty($userId) || empty($gameId) || empty($itemId) || empty($ammount)) {
             $response->setStatusCode(400);
             $response->setContent(json_encode(array(
@@ -115,12 +117,22 @@ class TimeDudeController extends FOSRestController {
             return $response;
         }
 
-
-        $type = 'coin';
+        $rewardType = $this->getDoctrine()->getRepository('TimeDudeBundle:RewardType')->findOneByName($type);
+        
+        if(!$rewardType){
+            $response->setStatusCode(400);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'Invalid reward type'
+            )));
+            return $response;
+        }
+        
+        
         $coin = new Reward();
         $coin->setAmmount($ammount);
         $coin->setUser($user);
-
+        $coin->setRewardtype($rewardType);
         $coin->setGameId($gameId);
         $coin->setDate($date);
         $em = $this->getDoctrine()->getManager();
@@ -130,7 +142,7 @@ class TimeDudeController extends FOSRestController {
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'User ' . $user->getFirstname() . ' received ' . $ammount . ' items of type ' . $type . ' in game ' . $gameId
+            'message' => 'User ' . $user->getFirstname() . ' received ' . $ammount . ' items of type ' . ucfirst($rewardType->getName()) . ' in game ' . $gameId
         )));
         return $response;
     }
