@@ -6,13 +6,13 @@ use Doctrine\ORM\Mapping as ORM;
 use TimeDude\Bundle\UserBundle\Entity\User;
 
 /**
- * Coin
+ * Reward
  *
- * @ORM\Table(name="Coins")
- * @ORM\Entity(repositoryClass="TimeDude\Bundle\TimeDudeBundle\Entity\CoinRepository")
+ * @ORM\Table(name="Rewards")
+ * @ORM\Entity(repositoryClass="TimeDude\Bundle\TimeDudeBundle\Entity\RewardRepository")
  */
-class Coin
-{
+class Reward {
+
     /**
      * @var integer
      *
@@ -43,24 +43,29 @@ class Coin
      */
     private $date;
 
-
     /**
      * @var User
      * 
-     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\UserBundle\Entity\User", inversedBy="coins")
+     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\UserBundle\Entity\User", inversedBy="rewards")
      * @ORM\JoinColumn(name="user_id",referencedColumnName="id")
      * 
      */
-     protected $user;
-    
+    protected $user;
+
+    /**
+     * @var RewardType 
+     * 
+     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\RewardType", inversedBy="rewards")
+     * @ORM\JoinColumn(name="reward_type",referencedColumnName="id", nullable=false)
+     */
+    private $rewardtype;
 
     /**
      * Get id
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -68,10 +73,9 @@ class Coin
      * Set gameId
      *
      * @param integer $gameId
-     * @return Coin
+     * @return Reward
      */
-    public function setGameId($gameId)
-    {
+    public function setGameId($gameId) {
         $this->gameId = $gameId;
 
         return $this;
@@ -82,8 +86,7 @@ class Coin
      *
      * @return integer 
      */
-    public function getGameId()
-    {
+    public function getGameId() {
         return $this->gameId;
     }
 
@@ -91,10 +94,9 @@ class Coin
      * Set ammount
      *
      * @param integer $ammount
-     * @return Coin
+     * @return Reward
      */
-    public function setAmmount($ammount)
-    {
+    public function setAmmount($ammount) {
         $this->ammount = $ammount;
 
         return $this;
@@ -105,8 +107,7 @@ class Coin
      *
      * @return integer 
      */
-    public function getAmmount()
-    {
+    public function getAmmount() {
         return $this->ammount;
     }
 
@@ -114,10 +115,9 @@ class Coin
      * Set date
      *
      * @param \DateTime $date
-     * @return Coin
+     * @return Reward
      */
-    public function setDate($date)
-    {
+    public function setDate($date) {
         $this->date = $date;
 
         return $this;
@@ -128,8 +128,7 @@ class Coin
      *
      * @return \DateTime 
      */
-    public function getDate()
-    {
+    public function getDate() {
         return $this->date;
     }
 
@@ -137,10 +136,9 @@ class Coin
      * Set user
      *
      * @param \TimeDude\Bundle\UserBundle\Entity\User $user
-     * @return Coin
+     * @return Reward
      */
-    public function setUser(\TimeDude\Bundle\UserBundle\Entity\User $user = null)
-    {
+    public function setUser(\TimeDude\Bundle\UserBundle\Entity\User $user = null) {
         $this->user = $user;
 
         return $this;
@@ -151,8 +149,31 @@ class Coin
      *
      * @return \TimeDude\Bundle\UserBundle\Entity\User 
      */
-    public function getUser()
-    {
+    public function getUser() {
         return $this->user;
+    }
+
+
+    /**
+     * Set rewardtype
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\RewardType $rewardtype
+     * @return Reward
+     */
+    public function setRewardtype(\TimeDude\Bundle\TimeDudeBundle\Entity\RewardType $rewardtype)
+    {
+        $this->rewardtype = $rewardtype;
+
+        return $this;
+    }
+
+    /**
+     * Get rewardtype
+     *
+     * @return \TimeDude\Bundle\TimeDudeBundle\Entity\RewardType 
+     */
+    public function getRewardtype()
+    {
+        return $this->rewardtype;
     }
 }

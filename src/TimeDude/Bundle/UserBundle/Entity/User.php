@@ -23,8 +23,8 @@ use JMS\Serializer\Annotation\Exclude;
 class User {
 
     public function __construct() {
-        
-        $this->coins = new ArrayCollection();
+
+        $this->rewards = new ArrayCollection();
     }
 
     /**
@@ -48,11 +48,12 @@ class User {
      * @ORM\Column(type="string", name="lastname", nullable=true)
      */
     private $lastname;
-    
+
     /**
-     * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Coin", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Reward", mappedBy="user")
      */
-    private $coins;
+    private $rewards;
+
 
     /**
      * Get id
@@ -134,35 +135,35 @@ class User {
     }
 
     /**
-     * Add coins
+     * Add rewards
      *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Coin $coins
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards
      * @return User
      */
-    public function addCoin(\TimeDude\Bundle\TimeDudeBundle\Entity\Coin $coins)
+    public function addReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards)
     {
-        $this->coins[] = $coins;
+        $this->rewards[] = $rewards;
 
         return $this;
     }
 
     /**
-     * Remove coins
+     * Remove rewards
      *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Coin $coins
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards
      */
-    public function removeCoin(\TimeDude\Bundle\TimeDudeBundle\Entity\Coin $coins)
+    public function removeReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards)
     {
-        $this->coins->removeElement($coins);
+        $this->rewards->removeElement($rewards);
     }
 
     /**
-     * Get coins
+     * Get rewards
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getCoins()
+    public function getRewards()
     {
-        return $this->coins;
+        return $this->rewards;
     }
 }
