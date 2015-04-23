@@ -1,0 +1,4 @@
+timedude_api:
+   type: rest
+   prefix: /v1
+   resource: TimeDude\Bundle\TimeDudeBundle\Controller\TimeDudeController

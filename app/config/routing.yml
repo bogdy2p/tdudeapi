@@ -1,0 +1,18 @@
+
+#file:
+#    resource: "@FileBundle/Controller/"
+#    type:     annotation
+#    prefix:   /
+#reference:
+#    resource: "@TimeDudeBundle/Controller/ReferenceController.php"
+#    type:     annotation
+mission_control_user:
+    resource: @UserBundle/Controller/
+    type:     annotation
+timedude_api:
+    resource: @TimeDudeBundle/Controller/
+    type: annotation
+    prefix: /api/v1
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix: /api/v1/doc

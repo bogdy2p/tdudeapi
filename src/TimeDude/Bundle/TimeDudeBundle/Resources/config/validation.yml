@@ -1,0 +1,29 @@
+TimeDude\Bundle\TimeDudeBundle\Entity\Campaign:
+    properties:
+        name:
+            - NotBlank:
+                message: "Please insert a name for the new campaign you want to create."
+        client:
+            - NotBlank:
+                message: "The client_id is required !"
+        brand:
+            - NotBlank:
+                message: "The brand_id is required in order to create a new campaign."
+        product:
+            - NotBlank:
+                message: "The product_id is required !"
+        division:
+            - NotBlank:
+                message: "The division_id is required !"
+        productline:
+            - NotBlank:
+                message: "The productline_id is required !"
+        country:
+            - NotBlank:
+                message: "The country_id is required !"
+        completion_date:
+            - NotBlank:
+                message: "The completion_date is required !"
+        client_deliverabledate:
+            - NotBlank:
+                message: "The client_deliverabledate is required !"       

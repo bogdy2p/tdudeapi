@@ -1,0 +1,52 @@
+MissionControl\Bundle\UserBundle\Entity\User:
+    #getters:
+    #    passwordCheck:
+    #        - "False": { message: "Entered password and confirmation do not match."}
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+            fields: username
+            message: "The username provided is already in use."
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity: 
+            fields: email
+            message: "The email provided is already in use."
+    properties:
+        enabled:
+            - NotNull:
+                message: "The enabled/disabled state of this user must be set!"
+        username:
+            - NotNull:
+                message: "Please enter the username you want to use."
+            - Length:
+                min: 4
+                max: 255
+                minMessage: "Username must have a minimum of {{ limit }} characters."
+                maxMessage: "Username must have a maximum of {{ limit }} characters."
+        lastname:
+            - NotNull:
+                message: "Please enter the lastname you want to use."
+        firstname:
+            - NotNull:
+                message: "Please enter the firstname you want to use."
+        email:
+            - NotNull:
+                message: "Please enter your email."
+            - Email:
+                message: "The email {{ value }} is not a valid email."
+        phone:
+            - NotNull:
+                message: "Please enter the phone number of this user."
+        title:
+            - NotNull:
+                message: "Please enter the title this user has."
+        office:
+            - NotNull:
+                message: "Please enter the office this user belongs to."
+        password:
+            - NotNull:
+                message: "Password should be between 6 and 200 characters length containing at least one letter and one number."
+            #- EqualTo:
+            #    value: 
+            #    message: "Entered password and confirmation do not match."
+            - Regex: 
+                pattern: "/^(?=.*\d)(?=.*[a-zA-Z]).{6,200}$/"
+                message: "Password should be between 6 and 200 characters length containing at least one letter and one number."
