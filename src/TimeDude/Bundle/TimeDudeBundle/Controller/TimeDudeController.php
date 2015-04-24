@@ -76,7 +76,8 @@ class TimeDudeController extends FOSRestController {
      *      section="RedeemItems",
      * 		statusCodes = {
      * 			201 = "User Has Been Rewarded / Penalized",
-     * 			404 = "User not found."
+     * 			404 = "User not found.",
+     *                  500 = "No token / Invalid API KEY",
      * 		},
      *      parameters={
      *          {"name"="userId", "dataType"="string", "required"=true, "description"="The user's google id."},
