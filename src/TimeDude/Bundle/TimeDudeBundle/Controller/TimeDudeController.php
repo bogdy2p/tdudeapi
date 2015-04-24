@@ -232,7 +232,7 @@ class TimeDudeController extends FOSRestController {
      * )
      *
      */
-    public function geRewardInformationForGameAction(Request $request) {
+    public function getRewardInformationForGameAction(Request $request) {
         $response = new Response();
 
         $userId = $request->get('userId');
@@ -322,4 +322,49 @@ class TimeDudeController extends FOSRestController {
         return $response;
     }
 
+    
+    
+    /**
+     * @Route("/listusers", name="list_game_users")
+     * @Method("GET")
+     *
+     * @ApiDoc(
+     *      deprecated=TRUE,
+     * 		description = "Returns a list of all the users in the system. (DEVELOPMENT ONLY / WILL BE DISABLED)",
+     *      section="Z DEVELOPMENT Z",
+     * 		statusCodes = {
+     * 			200 = "Ok",
+     * 		},
+     * )
+     *
+     */
+    public function getGameUsersAction() {
+
+        $gameUsers = $this->getDoctrine()->getRepository("TimeDudeBundle:TimeDudeUser")->findAll();
+        
+        $response = new Response();
+
+        if (!$gameUsers) {
+            $response->setStatusCode(404);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'There are no game users currently in the database.'
+            )));
+            return $response;
+        }
+
+        $return_array = array();
+
+        foreach ($gameUsers as $user) {
+            $return_array[ucfirst($user->getGoogleUid())] = $user->getFirstname().' '.$user->getLastname();
+        }
+
+        $response->setStatusCode(200);
+        $response->setContent(json_encode(array(
+            'success' => true,
+            'message' => 'Listing Existing Users ',
+            'users' => $return_array
+        )));
+        return $response;
+    }
 }
