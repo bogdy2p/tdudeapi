@@ -36,7 +36,9 @@ class TimeDudeController extends FOSRestController {
      * 			200 = "True / False if User Exists",
      * 			404 = "User not found."
      * 		},
-     * 		
+     * requirements = {
+     *          {"name" = "userId", "requirement" = "true"}
+     * 		}
      * )
      *
      */
@@ -73,7 +75,7 @@ class TimeDudeController extends FOSRestController {
      * 		description = "DESCRIPTION HERE.",
      *      section="RedeemItems",
      * 		statusCodes = {
-     * 			201 = "User Has Been Rewarded",
+     * 			201 = "User Has Been Rewarded / Penalized",
      * 			404 = "User not found."
      * 		},
      *      parameters={
@@ -168,19 +170,98 @@ class TimeDudeController extends FOSRestController {
      * 			200 = "User Exists",
      * 			404 = "User not found."
      * 		},
-     * 		
+     *      requirements= {
+     * 		 {"name" = "userId", "requirement" = "true"}
+     * 		}
      * )
      *
      */
     public function getUserInformationAction($userId) {
 
         $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
+        $response = new Response();
+
+        if (!$user) {
+            $response->setStatusCode(400);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'The user id provided is wrong.'
+            )));
+            return $response;
+        }
+
+
+        $user_information = array();
+
+
+        $rewards = $user->getRewards();
+        $user_information['number_of_calls'] = count($rewards);
+        $reward_value = 0;
+        foreach ($rewards as $reward) {
+            $reward_value += $reward->getAmmount();
+        }
+        $user_information['value'] = $reward_value;
+
+        $response = new Response();
+        $response->setStatusCode(200);
+        $response->setContent(json_encode(array(
+            'success' => true,
+            'message' => $user_information
+        )));
+        return $response;
+    }
+
+    /**
+     * @Route("/usergameinfo/{userId}/{gameId}", name="get_user_information_specific_game")
+     * @Method("Get")
+     *
+     * @ApiDoc(
+     *      deprecated=FALSE,
+     * 		description = "Get User Information + Coin ammount.",
+     *      section="User",
+     * 		statusCodes = {
+     * 			200 = "User Exists",
+     * 			404 = "User not found."
+     * 		},
+     *      requirements = {
+     *          {"name" = "userId", "requirement" = "true"},
+     *          {"name" = "gameId", "requirement" = "true"}
+     * }
+     * 		
+     * )
+     *
+     */
+    public function geRewardInformationForGameAction(Request $request) {
+        $response = new Response();
+
+        $userId = $request->get('userId');
+        $gameId = $request->get('gameId');
+
+        if (!isset($userId) || !isset($gameId)) {
+            $response->setStatusCode(400);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'Please provide both required request parameters'
+            )));
+            return $response;
+        }
+
+        $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
+        if (!$user) {
+            $response->setStatusCode(400);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'The user id provided is wrong.'
+            )));
+            return $response;
+        }
+
 
         $user_information = array();
 
         if ($user) {
             $rewards = $user->getRewards();
-            $user_information['number_of_coins'] = count($rewards);
+            $user_information['number_of_calls'] = count($rewards);
             $reward_value = 0;
             foreach ($rewards as $reward) {
                 $reward_value += $reward->getAmmount();
@@ -188,7 +269,7 @@ class TimeDudeController extends FOSRestController {
             $user_information['value'] = $reward_value;
         }
 
-        $response = new Response();
+
         $response->setStatusCode(200);
         $response->setContent(json_encode(array(
             'success' => true,
@@ -206,10 +287,8 @@ class TimeDudeController extends FOSRestController {
      * 		description = "Returns true if the user has been found by an id, or false.",
      *      section="Item Related",
      * 		statusCodes = {
-     * 			200 = "True / False if User Exists",
-     * 			404 = "User not found."
+     * 			200 = "Ok",
      * 		},
-     * 		
      * )
      *
      */
