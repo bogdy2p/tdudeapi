@@ -31,7 +31,7 @@ class TimeDudeController extends FOSRestController {
      * @ApiDoc(
      *      deprecated=FALSE,
      * 		description = "Returns true if the user has been found by an id, or false.",
-     *      section="Check User Exists",
+     *      section="User",
      * 		statusCodes = {
      * 			200 = "True / False if User Exists",
      * 			404 = "User not found."
@@ -73,7 +73,7 @@ class TimeDudeController extends FOSRestController {
      * 		description = "DESCRIPTION HERE.",
      *      section="RedeemItems",
      * 		statusCodes = {
-     * 			200 = "User Exists",
+     * 			201 = "User Has Been Rewarded",
      * 			404 = "User not found."
      * 		},
      *      parameters={
@@ -95,9 +95,8 @@ class TimeDudeController extends FOSRestController {
         $gameId = $request->get('gameId');
         $itemId = $request->get('itemId');
         $ammount = $request->get('ammount');
-        $type = 'coin';
-        
-        
+
+
         if (empty($userId) || empty($gameId) || empty($itemId) || empty($ammount)) {
             $response->setStatusCode(400);
             $response->setContent(json_encode(array(
@@ -117,32 +116,32 @@ class TimeDudeController extends FOSRestController {
             return $response;
         }
 
-        $rewardType = $this->getDoctrine()->getRepository('TimeDudeBundle:RewardType')->findOneByName($type);
-        
-        if(!$rewardType){
+        $rewardType = $this->getDoctrine()->getRepository('TimeDudeBundle:RewardType')->findOneById($itemId);
+
+        if (!$rewardType) {
             $response->setStatusCode(400);
             $response->setContent(json_encode(array(
                 'success' => false,
-                'message' => 'Invalid reward type'
+                'message' => 'Invalid reward type / itemId'
             )));
             return $response;
         }
-        
-        
-        $coin = new Reward();
-        $coin->setAmmount($ammount);
-        $coin->setUser($user);
-        $coin->setRewardtype($rewardType);
-        $coin->setGameId($gameId);
-        $coin->setDate($date);
+
+
+        $reward = new Reward();
+        $reward->setAmmount($ammount);
+        $reward->setUser($user);
+        $reward->setRewardtype($rewardType);
+        $reward->setGameId($gameId);
+        $reward->setDate($date);
         $em = $this->getDoctrine()->getManager();
-        $em->persist($coin);
+        $em->persist($reward);
         $em->flush();
 
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'User ' . $user->getFirstname() . ' received ' . $ammount . ' items of type ' . ucfirst($rewardType->getName()) . ' in game ' . $gameId
+            'message' => 'User ' . $user->getId() . ' received ' . $ammount . ' items of type ' . ucfirst($rewardType->getName()) . ' in game ' . $gameId
         )));
         return $response;
     }
@@ -154,7 +153,7 @@ class TimeDudeController extends FOSRestController {
      * @ApiDoc(
      *      deprecated=FALSE,
      * 		description = "Get User Information + Coin ammount.",
-     *      section="User Information",
+     *      section="User",
      * 		statusCodes = {
      * 			200 = "User Exists",
      * 			404 = "User not found."
@@ -184,6 +183,51 @@ class TimeDudeController extends FOSRestController {
         $response->setContent(json_encode(array(
             'success' => true,
             'message' => $user_information
+        )));
+        return $response;
+    }
+
+    /**
+     * @Route("/itemtypes", name="getitemtypes")
+     * @Method("GET")
+     *
+     * @ApiDoc(
+     *      deprecated=FALSE,
+     * 		description = "Returns true if the user has been found by an id, or false.",
+     *      section="Item Related",
+     * 		statusCodes = {
+     * 			200 = "True / False if User Exists",
+     * 			404 = "User not found."
+     * 		},
+     * 		
+     * )
+     *
+     */
+    public function getItemTypesAction() {
+
+        $rewards = $this->getDoctrine()->getRepository("TimeDudeBundle:RewardType")->findAll();
+        $response = new Response();
+
+        if (!$rewards) {
+            $response->setStatusCode(404);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'There are no reward types in the database.'
+            )));
+            return $response;
+        }
+
+        $return_array = array();
+        
+        foreach ($rewards as $reward){
+            $return_array[ucfirst($reward->getName())] = $reward->getId();
+        }
+
+        $response->setStatusCode(200);
+        $response->setContent(json_encode(array(
+            'success' => true,
+            'message' => 'Listing item types availlable.',
+            'rewards' => $return_array
         )));
         return $response;
     }
