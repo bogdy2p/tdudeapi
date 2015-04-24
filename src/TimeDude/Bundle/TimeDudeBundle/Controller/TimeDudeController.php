@@ -88,6 +88,10 @@ class TimeDudeController extends FOSRestController {
      */
     public function postRedeemItemsAction(Request $request) {
 
+        $user_making_the_call = $this->getUser();
+        $http_call_by = $user_making_the_call->getUsername();
+
+
         $date = new \DateTime();
         $response = new Response();
 
@@ -127,21 +131,27 @@ class TimeDudeController extends FOSRestController {
             return $response;
         }
 
-
         $reward = new Reward();
         $reward->setAmmount($ammount);
         $reward->setUser($user);
         $reward->setRewardtype($rewardType);
         $reward->setGameId($gameId);
         $reward->setDate($date);
+        $reward->setHttpcallby($http_call_by);
         $em = $this->getDoctrine()->getManager();
         $em->persist($reward);
         $em->flush();
 
+        if ($ammount > 0) {
+            $lost_receive = 'received';
+        } else {
+            $lost_receive = 'lost';
+        }
+
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'User ' . $user->getId() . ' received ' . $ammount . ' items of type ' . ucfirst($rewardType->getName()) . ' in game ' . $gameId
+            'message' => 'User ' . $user->getId() . ' ' . $lost_receive . ' ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $gameId
         )));
         return $response;
     }
@@ -218,8 +228,8 @@ class TimeDudeController extends FOSRestController {
         }
 
         $return_array = array();
-        
-        foreach ($rewards as $reward){
+
+        foreach ($rewards as $reward) {
             $return_array[ucfirst($reward->getName())] = $reward->getId();
         }
 

@@ -37,6 +37,13 @@ class Reward {
     private $ammount;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="Http_Call_By", type="string", length=255, nullable=false)
+     */
+    private $httpcallby;
+    
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="datetime")
@@ -185,5 +192,28 @@ class Reward {
     public function getRewardtype()
     {
         return $this->rewardtype;
+    }
+
+    /**
+     * Set httpcallby
+     *
+     * @param string $httpcallby
+     * @return Reward
+     */
+    public function setHttpcallby($httpcallby)
+    {
+        $this->httpcallby = $httpcallby;
+
+        return $this;
+    }
+
+    /**
+     * Get httpcallby
+     *
+     * @return string 
+     */
+    public function getHttpcallby()
+    {
+        return $this->httpcallby;
     }
 }
