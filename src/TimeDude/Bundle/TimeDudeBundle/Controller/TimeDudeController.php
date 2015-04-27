@@ -61,7 +61,7 @@ class TimeDudeController extends FOSRestController {
             return $response;
         }
 
-        $response->setStatusCode(404);
+        $response->setStatusCode(200);
         $response->setContent(json_encode(array(
             'success' => false,
             'message' => 'User not found.'
