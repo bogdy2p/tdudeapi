@@ -97,7 +97,6 @@ class TimeDudeController extends FOSRestController {
         $user_making_the_call = $this->getUser();
         $http_call_by = $user_making_the_call->getUsername();
 
-
         $date = new \DateTime();
         $response = new Response();
 
@@ -154,50 +153,23 @@ class TimeDudeController extends FOSRestController {
             $lost_receive = 'lost';
         }
 
+        $message = "Redeem Items";
 
-        $pbc_google_id = '108258724289500664552';
-        $pbc_device_id = '281D722E3CD25E9A';
-//        $pbc_GSF = '305C153A78982501';
-//        $identifier = '94A7066D6454216';
-//        $gsf = '3FB6668736BA0A95';
-//        $message->setData('data');
+        $registration_id = $user->getRegistrationId();
 
+        $data = array(
+            'collapse_key' => 'do_not_collapse',
+            'vib' => 1,
+            'pw_msg' => 1,
+            'p' => 5);
 
-        $messagea = 'REEA REEA REEA Test';
-
-        $push_message = new AndroidMessage();
-        $push_message->setGCM(true);
-        $push_message->setMessage($messagea);
-        $push_message->setDeviceIdentifier($pbc_device_id);
-
-        $RMS = $this->container->get('rms_push_notifications.android');
-
-
-
-        $test = $RMS->send($push_message);
-
-
-        //return new Response('Push notification send!');
-
-        var_dump($RMS);
-
-
-
-
-        die();
-
-
-
-
-
-
-
-
+        $notify = self::notifyAndroid($message, $registration_id, $data);
 
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'User ' . $user->getId() . ' ' . $lost_receive . ' ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $gameId
+            'message' => 'User ' . $user->getId() . ' ' . $lost_receive . ' ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $gameId,
+            'notify' => $notify
         )));
         return $response;
     }
@@ -221,10 +193,6 @@ class TimeDudeController extends FOSRestController {
      *
      */
     public function getUserInformationAction($userId) {
-//        $asd = self::thecall();
-//        var_dump($asd);
-//        die();
-
 
         $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
         $response = new Response();
@@ -401,7 +369,7 @@ class TimeDudeController extends FOSRestController {
         $return_array = array();
 
         foreach ($gameUsers as $user) {
-            $return_array[ucfirst($user->getGoogleUid())] = $user->getFirstname() . ' ' . $user->getLastname();
+            $return_array[ucfirst($user->getGoogleUid())] = $user->getName() . ' ' . $user->getEmail();
         }
 
         $response->setStatusCode(200);
@@ -428,9 +396,9 @@ class TimeDudeController extends FOSRestController {
      * 		},
      *      parameters={
      *          {"name"="googleUid", "dataType"="string", "required"=true, "description"="The user's google id."},
-     *          {"name"="email",     "dataType"="string", "required"=true, "description"="The user's email adress."},
-     *          {"name"="firstname", "dataType"="string", "required"=false, "description"="The user's firstname"},
-     *          {"name"="lastname",  "dataType"="integer", "required"=false, "description"="The user's lastname"},
+     *          {"name"="registrationId",     "dataType"="string", "required"=true, "description"="The user's api registration ID."},
+     *          {"name"="email", "dataType"="string", "required"=false, "description"="The user's email"},
+     *          {"name"="name",  "dataType"="integer", "required"=false, "description"="The user's name"},
      * }
      * 		
      * )
@@ -446,102 +414,36 @@ class TimeDudeController extends FOSRestController {
         $response = new Response();
 
         $googleUid = $request->get('googleUid');
+        $registrationId = $request->get('registrationId');
         $email = $request->get('email');
-        $firstname = $request->get('firstname');
-        $lastname = $request->get('lastname');
+        $name = $request->get('name');
 
 
-        if (empty($googleUid) || empty($email)) {
+        if (empty($googleUid) || empty($registrationId) || empty($email)) {
             $response->setStatusCode(400);
             $response->setContent(json_encode(array(
                 'success' => false,
-                'message' => 'googleUid and email parameters are required.'
+                'message' => 'GoogleId , RegistrationId and Email are required.'
             )));
             return $response;
         }
 
-
         $newUser = new TimeDudeUser();
 
         $newUser->setGoogleUid($googleUid);
-        $newUser->setFirstname($firstname);
-        $newUser->setLastname($lastname);
-
+        $newUser->setRegistrationId($registrationId);
+        $newUser->setEmail($email);
+        $newUser->setName($name);
 
         $em = $this->getDoctrine()->getManager();
-//        $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
-//
-//        if (!$user) {
-//            $response->setStatusCode(400);
-//            $response->setContent(json_encode(array(
-//                'success' => false,
-//                'message' => 'The user id provided is wrong. (no such user in the db)'
-//            )));
-//            return $response;
-//        }
-//        $rewardType = $this->getDoctrine()->getRepository('TimeDudeBundle:RewardType')->findOneById($itemId);
-//
-//        if (!$rewardType) {
-//            $response->setStatusCode(400);
-//            $response->setContent(json_encode(array(
-//                'success' => false,
-//                'message' => 'Invalid reward type / itemId'
-//            )));
-//            return $response;
-//        }
-//
-//        $reward = new Reward();
-//        $reward->setAmmount($ammount);
-//        $reward->setUser($user);
-//        $reward->setRewardtype($rewardType);
-//        $reward->setGameId($gameId);
-//        $reward->setDate($date);
-//        $reward->setHttpcallby($http_call_by);
-//        $em = $this->getDoctrine()->getManager();
-//        $em->persist($reward);
-//        $em->flush();
-//        if ($ammount > 0) {
-//            $lost_receive = 'received';
-//        } else {
-//            $lost_receive = 'lost';
-//        }
-//
-//        $response->setStatusCode(201);
-//        $response->setContent(json_encode(array(
-//            'success' => true,
-//            'message' => 'User ' . $user->getId() . ' ' . $lost_receive . ' ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $gameId
-//        )));
-//        return $response;
-    }
+        $em->persist($newUser);
+        $em->flush();
 
-    public function thecall() {
-        $message = "thetest mess 432 432 4age";
-
-        $registrationId = 'APA91bG_-Dkxjfh-6IxOiw6bJPs1KNs3Brw_Yh_lZ4b2TDBsurhe_fkWO6sj3LX-6QU0T77BOB1SJiUKuSLgy4GGKp_U0hKVMQ4v7z_mTPepN8dEMs3WXi9-j2m8BUAcmMa9LsiGfPpiqy40kOxXJ0FFjmX3ZX8XWA';
-
-
-        $apiKey = "AIzaSyD0SWi_s_gdWIgfWLZOVxoXYiAGOudTKQE";
-
-        $headers = array("Content-Type:" . "application/json", "Authorization:" . "key=" . $apiKey);
-
-        $data = array(
-            'data' => array("message" => $message),
-            'registration_ids' => array($registrationId),
-            'collapse_key' => 'do_not_collapse'
-        );
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_URL, "https://android.googleapis.com/gcm/send");
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
+        $response->setStatusCode(201);
+        $response->setContent(json_encode(array(
+            'success' => true,
+            'message' => 'A user for acccount ' . $email . ' has been registered.'
+        )));
         return $response;
     }
 
@@ -577,14 +479,11 @@ class TimeDudeController extends FOSRestController {
         $push_message->setMessage($messagea);
         $push_message->setDeviceIdentifier($registrationId);
         $push_message->setData($data);
-        
-        
-        
-        
+
 
         $RMS = $this->container->get('rms_push_notifications');
         $RMS->send($push_message);
-    
+
 
         $response = new Response();
         $response->setStatusCode(200);
@@ -593,6 +492,18 @@ class TimeDudeController extends FOSRestController {
             'message' => 'Push message sent.',
         )));
         return $response;
+    }
+
+    public function notifyAndroid($message, $registrationId, $data) {
+
+        $push_message = new AndroidMessage();
+        $push_message->setGCM(true);
+        $push_message->setMessage($message);
+        $push_message->setDeviceIdentifier($registrationId);
+        $push_message->setData($data);
+        $RMS = $this->container->get('rms_push_notifications')->send($push_message);
+
+        return $RMS;
     }
 
 }

@@ -17,7 +17,7 @@ class LoadRewardTypesData extends AbstractFixture implements OrderedFixtureInter
     public function load(ObjectManager $manager) {
 
         $reward_type_names = array(
-            'coin', 'type2', 'type3'
+            'coin', //'type2', 'type3'
         );
 
         foreach ($reward_type_names as $reward_name) {

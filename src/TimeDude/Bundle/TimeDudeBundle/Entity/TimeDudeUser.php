@@ -45,23 +45,26 @@ class TimeDudeUser {
     protected $registrationId;
 
     /**
-     * @ORM\Column(type="string", name="lastname", nullable=true)
+     * @ORM\Column(type="string", name="email", nullable=true)
      */
-    private $lastname;
+    private $email;
+
+    /**
+     * @ORM\Column(type="string", name="name", nullable=true)
+     */
+    private $name;
 
     /**
      * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Reward", mappedBy="user")
      */
     private $rewards;
 
-
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -72,8 +75,7 @@ class TimeDudeUser {
      *
      * @return TimeDudeUser
      */
-    public function setGoogleUid($googleUid)
-    {
+    public function setGoogleUid($googleUid) {
         $this->googleUid = $googleUid;
 
         return $this;
@@ -84,8 +86,7 @@ class TimeDudeUser {
      *
      * @return string
      */
-    public function getGoogleUid()
-    {
+    public function getGoogleUid() {
         return $this->googleUid;
     }
 
@@ -96,8 +97,7 @@ class TimeDudeUser {
      *
      * @return TimeDudeUser
      */
-    public function setRegistrationId($registrationId)
-    {
+    public function setRegistrationId($registrationId) {
         $this->registrationId = $registrationId;
 
         return $this;
@@ -108,8 +108,7 @@ class TimeDudeUser {
      *
      * @return string
      */
-    public function getRegistrationId()
-    {
+    public function getRegistrationId() {
         return $this->registrationId;
     }
 
@@ -120,8 +119,7 @@ class TimeDudeUser {
      *
      * @return TimeDudeUser
      */
-    public function setLastname($lastname)
-    {
+    public function setLastname($lastname) {
         $this->lastname = $lastname;
 
         return $this;
@@ -132,8 +130,7 @@ class TimeDudeUser {
      *
      * @return string
      */
-    public function getLastname()
-    {
+    public function getLastname() {
         return $this->lastname;
     }
 
@@ -144,8 +141,7 @@ class TimeDudeUser {
      *
      * @return TimeDudeUser
      */
-    public function addReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward)
-    {
+    public function addReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward) {
         $this->rewards[] = $reward;
 
         return $this;
@@ -156,8 +152,7 @@ class TimeDudeUser {
      *
      * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward
      */
-    public function removeReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward)
-    {
+    public function removeReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward) {
         $this->rewards->removeElement($reward);
     }
 
@@ -166,8 +161,56 @@ class TimeDudeUser {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getRewards()
-    {
+    public function getRewards() {
         return $this->rewards;
+    }
+
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     *
+     * @return TimeDudeUser
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     *
+     * @return TimeDudeUser
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }
