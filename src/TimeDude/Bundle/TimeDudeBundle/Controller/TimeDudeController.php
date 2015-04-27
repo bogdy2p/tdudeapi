@@ -272,7 +272,16 @@ class TimeDudeController extends FOSRestController {
             return $response;
         }
 
-
+//        $game = $this->getDoctrine()->getRepository('TimeDudeBundle:Game')->findOneById($gameId);
+//        if (!$game) {
+//            $response->setStatusCode(400);
+//            $response->setContent(json_encode(array(
+//                'success' => false,
+//                'message' => 'The game id provided is wrong.'
+//            )));
+//            return $response;
+//        }
+        
         $user_information = array();
 
         if ($user) {
