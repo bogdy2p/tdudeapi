@@ -117,6 +117,7 @@ rms_push_notifications:
 #            password: <string_android_c2dm_password>
 #            source: <string_android_c2dm_source>
         gcm:
-#            tdudeapi_key: AIzaSyD0SWi_s_gdWIgfWLZOVxoXYiAGOudTKQE
-            api_key: AIzaSyBcR3kkCOqVWCMjhHpzL66KwgF54x_bxqM
+            api_key: AIzaSyD0SWi_s_gdWIgfWLZOVxoXYiAGOudTKQE
+            #api_key: AIzaSyBcR3kkCOqVWCMjhHpzL66KwgF54x_bxqM
+            
             use_multi_curl: true

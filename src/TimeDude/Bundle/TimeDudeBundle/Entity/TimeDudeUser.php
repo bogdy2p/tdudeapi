@@ -40,9 +40,9 @@ class TimeDudeUser {
     protected $googleUid;
 
     /**
-     * @ORM\Column(type="string", name="firstname", nullable=true)
+     * @ORM\Column(type="string", name="registrationId", nullable=true)
      */
-    protected $firstname;
+    protected $registrationId;
 
     /**
      * @ORM\Column(type="string", name="lastname", nullable=true)
@@ -58,7 +58,7 @@ class TimeDudeUser {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -69,7 +69,8 @@ class TimeDudeUser {
      * Set googleUid
      *
      * @param string $googleUid
-     * @return User
+     *
+     * @return TimeDudeUser
      */
     public function setGoogleUid($googleUid)
     {
@@ -81,7 +82,7 @@ class TimeDudeUser {
     /**
      * Get googleUid
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleUid()
     {
@@ -89,33 +90,35 @@ class TimeDudeUser {
     }
 
     /**
-     * Set firstname
+     * Set registrationId
      *
-     * @param string $firstname
-     * @return User
+     * @param string $registrationId
+     *
+     * @return TimeDudeUser
      */
-    public function setFirstname($firstname)
+    public function setRegistrationId($registrationId)
     {
-        $this->firstname = $firstname;
+        $this->registrationId = $registrationId;
 
         return $this;
     }
 
     /**
-     * Get firstname
+     * Get registrationId
      *
-     * @return string 
+     * @return string
      */
-    public function getFirstname()
+    public function getRegistrationId()
     {
-        return $this->firstname;
+        return $this->registrationId;
     }
 
     /**
      * Set lastname
      *
      * @param string $lastname
-     * @return User
+     *
+     * @return TimeDudeUser
      */
     public function setLastname($lastname)
     {
@@ -127,7 +130,7 @@ class TimeDudeUser {
     /**
      * Get lastname
      *
-     * @return string 
+     * @return string
      */
     public function getLastname()
     {
@@ -135,32 +138,33 @@ class TimeDudeUser {
     }
 
     /**
-     * Add rewards
+     * Add reward
      *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards
-     * @return User
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward
+     *
+     * @return TimeDudeUser
      */
-    public function addReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards)
+    public function addReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward)
     {
-        $this->rewards[] = $rewards;
+        $this->rewards[] = $reward;
 
         return $this;
     }
 
     /**
-     * Remove rewards
+     * Remove reward
      *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward
      */
-    public function removeReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $rewards)
+    public function removeReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward)
     {
-        $this->rewards->removeElement($rewards);
+        $this->rewards->removeElement($reward);
     }
 
     /**
      * Get rewards
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getRewards()
     {

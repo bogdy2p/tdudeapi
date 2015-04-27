@@ -221,12 +221,11 @@ class TimeDudeController extends FOSRestController {
      *
      */
     public function getUserInformationAction($userId) {
-        $asd = self::thecall();
-        
-        var_dump($asd);
-        die();
-        
-        
+//        $asd = self::thecall();
+//        var_dump($asd);
+//        die();
+
+
         $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
         $response = new Response();
 
@@ -516,23 +515,19 @@ class TimeDudeController extends FOSRestController {
     }
 
     public function thecall() {
-        $message = "thetest message";
-        $tickerText = "ticker text message";
-        $contentTitle = "content title";
-        $contentText = "content body";
+        $message = "thetest mess 432 432 4age";
 
-        $registrationId = 'abcdef...';
-        
-        $pbc_google_id = '108258724289500664552';
-        $pbc_device_id = '281D722E3CD25E9A';
-        $projectid = 'timedudeapitestv001';
-        $apiKey = "AIzaSyBcR3kkCOqVWCMjhHpzL66KwgF54x_bxqM";
+        $registrationId = 'APA91bG_-Dkxjfh-6IxOiw6bJPs1KNs3Brw_Yh_lZ4b2TDBsurhe_fkWO6sj3LX-6QU0T77BOB1SJiUKuSLgy4GGKp_U0hKVMQ4v7z_mTPepN8dEMs3WXi9-j2m8BUAcmMa9LsiGfPpiqy40kOxXJ0FFjmX3ZX8XWA';
+
+
+        $apiKey = "AIzaSyD0SWi_s_gdWIgfWLZOVxoXYiAGOudTKQE";
 
         $headers = array("Content-Type:" . "application/json", "Authorization:" . "key=" . $apiKey);
 
         $data = array(
             'data' => array("message" => $message),
-            'registration_ids' => array($pbc_google_id)
+            'registration_ids' => array($registrationId),
+            'collapse_key' => 'do_not_collapse'
         );
 
         $ch = curl_init();
@@ -548,14 +543,9 @@ class TimeDudeController extends FOSRestController {
         curl_close($ch);
 
         return $response;
-        
-        
-        
-        
     }
 
-    
-       /**
+    /**
      * @Route("/test1", name="test1")
      * @Method("GET")
      *
@@ -571,48 +561,38 @@ class TimeDudeController extends FOSRestController {
      */
     public function test1Action() {
 
-      
-        $pbc_google_id = '108258724289500664552';
-        $pbc_device_id = '281D722E3CD25E9A';
-//        $pbc_GSF = '305C153A78982501';
-//        $identifier = '94A7066D6454216';
-//        $gsf = '3FB6668736BA0A95';
-//        $message->setData('data');
 
+        $data = array(
+            'collapse_key' => 'do_not_collapse',
+            'vib' => 1,
+            'pw_msg' => 1,
+            'p' => 5);
 
-        $messagea = 'REEA REEA REEA Test';
+        $registrationId = 'APA91bG_-Dkxjfh-6IxOiw6bJPs1KNs3Brw_Yh_lZ4b2TDBsurhe_fkWO6sj3LX-6QU0T77BOB1SJiUKuSLgy4GGKp_U0hKVMQ4v7z_mTPepN8dEMs3WXi9-j2m8BUAcmMa9LsiGfPpiqy40kOxXJ0FFjmX3ZX8XWA';
+
+        $messagea = 'REEA EAasd4 432432 23432423 REA Test';
 
         $push_message = new AndroidMessage();
         $push_message->setGCM(true);
         $push_message->setMessage($messagea);
-        $push_message->setDeviceIdentifier($pbc_device_id);
+        $push_message->setDeviceIdentifier($registrationId);
+        $push_message->setData($data);
+        
+        
+        
+        
 
         $RMS = $this->container->get('rms_push_notifications');
+        $RMS->send($push_message);
+    
 
-
-
-        $test = $RMS->send($push_message);
-
-
-        //return new Response('Push notification send!');
-
-        var_dump($RMS->getResponses('rms_push_notifications.os.android.gcm'));
-        
-//        var_dump($test);
-
-
-      die();
-      
-      
         $response = new Response();
         $response->setStatusCode(200);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'Test1Output',
-            'rewards' => $return_array
+            'message' => 'Push message sent.',
         )));
         return $response;
     }
-    
-    
+
 }
