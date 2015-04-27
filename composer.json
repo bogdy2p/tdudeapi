@@ -25,7 +25,7 @@
         "nelmio/api-doc-bundle": "2.7.0",
         "rhumsaa/uuid": "2.8.0",
         "nelmio/cors-bundle": "~1.4",
-        "phpoffice/phppowerpoint": "dev-develop"
+        "richsage/rms-push-notifications-bundle":"0.1.*@dev"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

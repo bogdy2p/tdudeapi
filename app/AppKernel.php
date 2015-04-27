@@ -27,6 +27,7 @@ class AppKernel extends Kernel
             new NelmioApiDocBundle(),
             new Nelmio\CorsBundle\NelmioCorsBundle(),
             new JMSSerializerBundle(),
+            new RMS\PushNotificationsBundle\RMSPushNotificationsBundle(),
             
             new TimeDude\Bundle\UserBundle\UserBundle(),
             new TimeDude\Bundle\TimeDudeBundle\TimeDudeBundle(),
