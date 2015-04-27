@@ -136,11 +136,24 @@ class TimeDudeController extends FOSRestController {
             return $response;
         }
 
+        $game = $this->getDoctrine()->getRepository('TimeDudeBundle:Game')->findOneById($gameId);
+
+        if (!$game) {
+            $response->setStatusCode(400);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'Invalid game.'
+            )));
+            return $response;
+        }
+
+
+
         $reward = new Reward();
         $reward->setAmmount($ammount);
         $reward->setUser($user);
         $reward->setRewardtype($rewardType);
-        $reward->setGameId($gameId);
+        $reward->setGame($game);
         $reward->setDate($date);
         $reward->setHttpcallby($http_call_by);
         $em = $this->getDoctrine()->getManager();
@@ -158,12 +171,14 @@ class TimeDudeController extends FOSRestController {
         $registration_id = $user->getRegistrationId();
 
         $data = array(
+            'message' => $message,
+            'title' => 'You received ' . abs($ammount) . ' ' . ucfirst($rewardType->getName()),
             'collapse_key' => 'do_not_collapse',
             'vib' => 1,
             'pw_msg' => 1,
             'p' => 5);
 
-        $notify = self::notifyAndroid($message, $registration_id, $data);
+        $notify = self::notifyAndroid($registration_id, $data);
 
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
@@ -272,16 +287,16 @@ class TimeDudeController extends FOSRestController {
             return $response;
         }
 
-//        $game = $this->getDoctrine()->getRepository('TimeDudeBundle:Game')->findOneById($gameId);
-//        if (!$game) {
-//            $response->setStatusCode(400);
-//            $response->setContent(json_encode(array(
-//                'success' => false,
-//                'message' => 'The game id provided is wrong.'
-//            )));
-//            return $response;
-//        }
-        
+        $game = $this->getDoctrine()->getRepository('TimeDudeBundle:Game')->findOneById($gameId);
+        if (!$game) {
+            $response->setStatusCode(400);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'The game id provided is wrong.'
+            )));
+            return $response;
+        }
+
         $user_information = array();
 
         if ($user) {
@@ -503,11 +518,11 @@ class TimeDudeController extends FOSRestController {
         return $response;
     }
 
-    public function notifyAndroid($message, $registrationId, $data) {
+    public function notifyAndroid($registrationId, $data) {
 
         $push_message = new AndroidMessage();
         $push_message->setGCM(true);
-        $push_message->setMessage($message);
+//        $push_message->setMessage($message);
         $push_message->setDeviceIdentifier($registrationId);
         $push_message->setData($data);
         $RMS = $this->container->get('rms_push_notifications')->send($push_message);

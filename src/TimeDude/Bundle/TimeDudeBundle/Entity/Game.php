@@ -3,6 +3,10 @@
 namespace TimeDude\Bundle\TimeDudeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\ExclusionPolicy;
 
 /**
  * Game
@@ -10,8 +14,12 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="Games")
  * @ORM\Entity
  */
-class Game
-{
+class Game {
+
+    public function __construct() {
+        $this->rewards = new ArrayCollection();
+    }
+
     /**
      * @var integer
      *
@@ -35,14 +43,12 @@ class Game
      */
     private $developer;
 
-
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -53,8 +59,7 @@ class Game
      *
      * @return Game
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -65,8 +70,7 @@ class Game
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -77,8 +81,7 @@ class Game
      *
      * @return Game
      */
-    public function setDeveloper($developer)
-    {
+    public function setDeveloper($developer) {
         $this->developer = $developer;
 
         return $this;
@@ -89,9 +92,8 @@ class Game
      *
      * @return string
      */
-    public function getDeveloper()
-    {
+    public function getDeveloper() {
         return $this->developer;
     }
-}
 
+}

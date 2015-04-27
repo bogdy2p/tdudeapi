@@ -23,11 +23,12 @@ class Reward {
     private $id;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="game_id", type="integer")
+     * @var Game 
+     * 
+     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Game", inversedBy="rewards")
+     * @ORM\JoinColumn(name="game",referencedColumnName="id", nullable=false)
      */
-    private $gameId;
+    private $game;
 
     /**
      * @var integer
@@ -42,7 +43,7 @@ class Reward {
      * @ORM\Column(name="Http_Call_By", type="string", length=255, nullable=false)
      */
     private $httpcallby;
-    
+
     /**
      * @var \DateTime
      *
@@ -67,12 +68,11 @@ class Reward {
      */
     private $rewardtype;
 
-   
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -80,32 +80,10 @@ class Reward {
     }
 
     /**
-     * Set gameId
-     *
-     * @param integer $gameId
-     * @return Reward
-     */
-    public function setGameId($gameId)
-    {
-        $this->gameId = $gameId;
-
-        return $this;
-    }
-
-    /**
-     * Get gameId
-     *
-     * @return integer 
-     */
-    public function getGameId()
-    {
-        return $this->gameId;
-    }
-
-    /**
      * Set ammount
      *
      * @param integer $ammount
+     *
      * @return Reward
      */
     public function setAmmount($ammount)
@@ -118,7 +96,7 @@ class Reward {
     /**
      * Get ammount
      *
-     * @return integer 
+     * @return integer
      */
     public function getAmmount()
     {
@@ -126,78 +104,10 @@ class Reward {
     }
 
     /**
-     * Set date
-     *
-     * @param \DateTime $date
-     * @return Reward
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    /**
-     * Get date
-     *
-     * @return \DateTime 
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
-
-    /**
-     * Set user
-     *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $user
-     * @return Reward
-     */
-    public function setUser(\TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $user = null)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser 
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * Set rewardtype
-     *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\RewardType $rewardtype
-     * @return Reward
-     */
-    public function setRewardtype(\TimeDude\Bundle\TimeDudeBundle\Entity\RewardType $rewardtype)
-    {
-        $this->rewardtype = $rewardtype;
-
-        return $this;
-    }
-
-    /**
-     * Get rewardtype
-     *
-     * @return \TimeDude\Bundle\TimeDudeBundle\Entity\RewardType 
-     */
-    public function getRewardtype()
-    {
-        return $this->rewardtype;
-    }
-
-    /**
      * Set httpcallby
      *
      * @param string $httpcallby
+     *
      * @return Reward
      */
     public function setHttpcallby($httpcallby)
@@ -210,10 +120,106 @@ class Reward {
     /**
      * Get httpcallby
      *
-     * @return string 
+     * @return string
      */
     public function getHttpcallby()
     {
         return $this->httpcallby;
+    }
+
+    /**
+     * Set date
+     *
+     * @param \DateTime $date
+     *
+     * @return Reward
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * Set game
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Game $game
+     *
+     * @return Reward
+     */
+    public function setGame(\TimeDude\Bundle\TimeDudeBundle\Entity\Game $game)
+    {
+        $this->game = $game;
+
+        return $this;
+    }
+
+    /**
+     * Get game
+     *
+     * @return \TimeDude\Bundle\TimeDudeBundle\Entity\Game
+     */
+    public function getGame()
+    {
+        return $this->game;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $user
+     *
+     * @return Reward
+     */
+    public function setUser(\TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set rewardtype
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\RewardType $rewardtype
+     *
+     * @return Reward
+     */
+    public function setRewardtype(\TimeDude\Bundle\TimeDudeBundle\Entity\RewardType $rewardtype)
+    {
+        $this->rewardtype = $rewardtype;
+
+        return $this;
+    }
+
+    /**
+     * Get rewardtype
+     *
+     * @return \TimeDude\Bundle\TimeDudeBundle\Entity\RewardType
+     */
+    public function getRewardtype()
+    {
+        return $this->rewardtype;
     }
 }
