@@ -299,10 +299,18 @@ class TimeDudeController extends FOSRestController {
         $user_information = array();
 
         if ($user) {
-            $rewards = $user->getRewards();
-            $user_information['number_of_calls'] = count($rewards);
+            $all_rewards = $user->getRewards();
+            $game_rewards = array();
+            foreach ($all_rewards as $reward){
+                if ($reward->getGame() == $game){
+                    $game_rewards[] = $reward;
+                }
+            
+            }
+            
+            $user_information['number_of_calls'] = count($game_rewards);
             $reward_value = 0;
-            foreach ($rewards as $reward) {
+            foreach ($game_rewards as $reward) {
                 $reward_value += $reward->getAmmount();
             }
             $user_information['value'] = $reward_value;
@@ -521,16 +529,15 @@ class TimeDudeController extends FOSRestController {
 //        return $response;
 //    }
 //
-//    public function notifyAndroid($registrationId, $data) {
-//
-//        $push_message = new AndroidMessage();
-//        $push_message->setGCM(true);
-////        $push_message->setMessage($message);
-//        $push_message->setDeviceIdentifier($registrationId);
-//        $push_message->setData($data);
-//        $RMS = $this->container->get('rms_push_notifications')->send($push_message);
-//
-//        return $RMS;
-//    }
+    public function notifyAndroid($registrationId, $data) {
+
+        $push_message = new AndroidMessage();
+        $push_message->setGCM(true);
+        $push_message->setDeviceIdentifier($registrationId);
+        $push_message->setData($data);
+        $RMS = $this->container->get('rms_push_notifications')->send($push_message);
+
+        return $RMS;
+    }
 
 }

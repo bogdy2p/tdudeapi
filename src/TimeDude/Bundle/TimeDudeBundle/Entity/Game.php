@@ -39,6 +39,13 @@ class Game {
     /**
      * @var string
      *
+     * @ORM\Column(name="appId", type="string", length=255, nullable=false)
+     */
+    private $appId;
+    
+    /**
+     * @var string
+     *
      * @ORM\Column(name="developer", type="string", length=255)
      */
     private $developer;
@@ -96,4 +103,28 @@ class Game {
         return $this->developer;
     }
 
+
+    /**
+     * Set appId
+     *
+     * @param string $appId
+     *
+     * @return Game
+     */
+    public function setAppId($appId)
+    {
+        $this->appId = $appId;
+
+        return $this;
+    }
+
+    /**
+     * Get appId
+     *
+     * @return string
+     */
+    public function getAppId()
+    {
+        return $this->appId;
+    }
 }
