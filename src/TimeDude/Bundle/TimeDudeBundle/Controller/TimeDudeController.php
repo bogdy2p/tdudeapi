@@ -362,7 +362,7 @@ class TimeDudeController extends FOSRestController {
     }
 
     /**
-     * @Route("/listusers", name="list_game_users")
+     * @Route("/list_database_informations", name="list_db_information")
      * @Method("GET")
      *
      * @ApiDoc(
@@ -375,32 +375,36 @@ class TimeDudeController extends FOSRestController {
      * )
      *
      */
-    public function getGameUsersAction() {
-
-        $gameUsers = $this->getDoctrine()->getRepository("TimeDudeBundle:TimeDudeUser")->findAll();
+    public function getDbInformationAction() {
 
         $response = new Response();
-
-        if (!$gameUsers) {
-            $response->setStatusCode(404);
-            $response->setContent(json_encode(array(
-                'success' => false,
-                'message' => 'There are no game users currently in the database.'
-            )));
-            return $response;
-        }
+        $users = $this->getDoctrine()->getRepository("TimeDudeBundle:TimeDudeUser")->findAll();
+        $games = $this->getDoctrine()->getRepository("TimeDudeBundle:Game")->findAll();
+        $reward_types = $this->getDoctrine()->getRepository("TimeDudeBundle:RewardType")->findAll();
+        
+        
+        
+        
 
         $return_array = array();
 
-        foreach ($gameUsers as $user) {
-            $return_array[ucfirst($user->getGoogleUid())] = $user->getName() . ' ' . $user->getEmail();
+        foreach ($users as $user) {
+            $return_array['users'][ucfirst($user->getGoogleUid())] = $user->getName() . ' ' . $user->getEmail();
+        }
+        
+        foreach ($games as $game) {
+            $return_array['games'][ucfirst($game->getId())] = $game->getName();
         }
 
+        foreach ($reward_types as $reward_type) {
+            $return_array['rewards'][ucfirst($reward_type->getId())] = $reward_type->getName();
+        }
+        
         $response->setStatusCode(200);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'Listing Existing Users ',
-            'users' => $return_array
+            'message' => 'Listing Database Informations ',
+            'informations' => $return_array
         )));
         return $response;
     }
@@ -471,63 +475,63 @@ class TimeDudeController extends FOSRestController {
         return $response;
     }
 
-    /**
-     * @Route("/test1", name="test1")
-     * @Method("GET")
-     *
-     * @ApiDoc(
-     *      deprecated=true,
-     * 		description = "Returns true if the user has been found by an id, or false.",
-     *      section="Item Related",
-     * 		statusCodes = {
-     * 			200 = "Ok",
-     * 		},
-     * )
-     *
-     */
-    public function test1Action() {
-
-
-        $data = array(
-            'collapse_key' => 'do_not_collapse',
-            'vib' => 1,
-            'pw_msg' => 1,
-            'p' => 5);
-
-        $registrationId = 'APA91bG_-Dkxjfh-6IxOiw6bJPs1KNs3Brw_Yh_lZ4b2TDBsurhe_fkWO6sj3LX-6QU0T77BOB1SJiUKuSLgy4GGKp_U0hKVMQ4v7z_mTPepN8dEMs3WXi9-j2m8BUAcmMa9LsiGfPpiqy40kOxXJ0FFjmX3ZX8XWA';
-
-        $messagea = 'REEA EAasd4 432432 23432423 REA Test';
-
-        $push_message = new AndroidMessage();
-        $push_message->setGCM(true);
-        $push_message->setMessage($messagea);
-        $push_message->setDeviceIdentifier($registrationId);
-        $push_message->setData($data);
-
-
-        $RMS = $this->container->get('rms_push_notifications');
-        $RMS->send($push_message);
-
-
-        $response = new Response();
-        $response->setStatusCode(200);
-        $response->setContent(json_encode(array(
-            'success' => true,
-            'message' => 'Push message sent.',
-        )));
-        return $response;
-    }
-
-    public function notifyAndroid($registrationId, $data) {
-
-        $push_message = new AndroidMessage();
-        $push_message->setGCM(true);
-//        $push_message->setMessage($message);
-        $push_message->setDeviceIdentifier($registrationId);
-        $push_message->setData($data);
-        $RMS = $this->container->get('rms_push_notifications')->send($push_message);
-
-        return $RMS;
-    }
+//    /**
+//     * @Route("/test1", name="test1")
+//     * @Method("GET")
+//     *
+//     * @ApiDoc(
+//     *      deprecated=true,
+//     * 		description = "Returns true if the user has been found by an id, or false.",
+//     *      section="Item Related",
+//     * 		statusCodes = {
+//     * 			200 = "Ok",
+//     * 		},
+//     * )
+//     *
+//     */
+//    public function test1Action() {
+//
+//
+//        $data = array(
+//            'collapse_key' => 'do_not_collapse',
+//            'vib' => 1,
+//            'pw_msg' => 1,
+//            'p' => 5);
+//
+//        $registrationId = 'APA91bG_-Dkxjfh-6IxOiw6bJPs1KNs3Brw_Yh_lZ4b2TDBsurhe_fkWO6sj3LX-6QU0T77BOB1SJiUKuSLgy4GGKp_U0hKVMQ4v7z_mTPepN8dEMs3WXi9-j2m8BUAcmMa9LsiGfPpiqy40kOxXJ0FFjmX3ZX8XWA';
+//
+//        $messagea = 'REEA EAasd4 432432 23432423 REA Test';
+//
+//        $push_message = new AndroidMessage();
+//        $push_message->setGCM(true);
+//        $push_message->setMessage($messagea);
+//        $push_message->setDeviceIdentifier($registrationId);
+//        $push_message->setData($data);
+//
+//
+//        $RMS = $this->container->get('rms_push_notifications');
+//        $RMS->send($push_message);
+//
+//
+//        $response = new Response();
+//        $response->setStatusCode(200);
+//        $response->setContent(json_encode(array(
+//            'success' => true,
+//            'message' => 'Push message sent.',
+//        )));
+//        return $response;
+//    }
+//
+//    public function notifyAndroid($registrationId, $data) {
+//
+//        $push_message = new AndroidMessage();
+//        $push_message->setGCM(true);
+////        $push_message->setMessage($message);
+//        $push_message->setDeviceIdentifier($registrationId);
+//        $push_message->setData($data);
+//        $RMS = $this->container->get('rms_push_notifications')->send($push_message);
+//
+//        return $RMS;
+//    }
 
 }
