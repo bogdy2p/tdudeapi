@@ -36,8 +36,7 @@ class TimeDudeController extends FOSRestController {
      * 		description = "Returns true if the user has been found by an id, or false.",
      *      section="User",
      * 		statusCodes = {
-     * 			200 = "True / False if User Exists",
-     * 			404 = "User not found."
+     * 			200 = {"True / False if User Exists","User not found."},
      * 		},
      * requirements = {
      *          {"name" = "userId", "requirement" = "true"}
@@ -172,7 +171,7 @@ class TimeDudeController extends FOSRestController {
 
         $data = array(
             'message' => $message,
-            'title' => 'You received ' . abs($ammount) . ' ' . ucfirst($rewardType->getName()),
+            'title' => 'Coin ammount changed.',
             'collapse_key' => 'do_not_collapse',
             'vib' => 1,
             'pw_msg' => 1,
