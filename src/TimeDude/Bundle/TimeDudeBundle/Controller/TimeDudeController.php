@@ -106,7 +106,7 @@ class TimeDudeController extends FOSRestController {
 
 
         if (empty($userId) || empty($gameId) || empty($itemId) || empty($ammount)) {
-            $response->setStatusCode(400);
+            $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
                 'message' => 'Parameters are wrong or missing.'
@@ -116,7 +116,7 @@ class TimeDudeController extends FOSRestController {
         $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
 
         if (!$user) {
-            $response->setStatusCode(400);
+            $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
                 'message' => 'The user id provided is wrong. (no such user in the db)'
@@ -127,7 +127,7 @@ class TimeDudeController extends FOSRestController {
         $rewardType = $this->getDoctrine()->getRepository('TimeDudeBundle:RewardType')->findOneById($itemId);
 
         if (!$rewardType) {
-            $response->setStatusCode(400);
+            $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
                 'message' => 'Invalid reward type / itemId'
@@ -138,7 +138,7 @@ class TimeDudeController extends FOSRestController {
         $game = $this->getDoctrine()->getRepository('TimeDudeBundle:Game')->findOneById($gameId);
 
         if (!$game) {
-            $response->setStatusCode(400);
+            $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
                 'message' => 'Invalid game.'
@@ -212,7 +212,7 @@ class TimeDudeController extends FOSRestController {
         $response = new Response();
 
         if (!$user) {
-            $response->setStatusCode(400);
+            $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
                 'message' => 'The user id provided is wrong.'
@@ -268,7 +268,7 @@ class TimeDudeController extends FOSRestController {
         $gameId = $request->get('gameId');
 
         if (!isset($userId) || !isset($gameId)) {
-            $response->setStatusCode(400);
+            $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
                 'message' => 'Please provide both required request parameters'
@@ -278,7 +278,7 @@ class TimeDudeController extends FOSRestController {
 
         $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
         if (!$user) {
-            $response->setStatusCode(400);
+            $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
                 'message' => 'The user id provided is wrong.'
@@ -288,7 +288,7 @@ class TimeDudeController extends FOSRestController {
 
         $game = $this->getDoctrine()->getRepository('TimeDudeBundle:Game')->findOneById($gameId);
         if (!$game) {
-            $response->setStatusCode(400);
+            $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
                 'message' => 'The game id provided is wrong.'
@@ -345,7 +345,7 @@ class TimeDudeController extends FOSRestController {
         $response = new Response();
 
         if (!$rewards) {
-            $response->setStatusCode(404);
+            $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
                 'message' => 'There are no reward types in the database.'
@@ -455,7 +455,7 @@ class TimeDudeController extends FOSRestController {
 
 
         if (empty($googleUid) || empty($registrationId) || empty($email)) {
-            $response->setStatusCode(400);
+            $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
                 'message' => 'GoogleId , RegistrationId and Email are required.'
@@ -482,53 +482,14 @@ class TimeDudeController extends FOSRestController {
         return $response;
     }
 
-//    /**
-//     * @Route("/test1", name="test1")
-//     * @Method("GET")
-//     *
-//     * @ApiDoc(
-//     *      deprecated=true,
-//     * 		description = "Returns true if the user has been found by an id, or false.",
-//     *      section="Item Related",
-//     * 		statusCodes = {
-//     * 			200 = "Ok",
-//     * 		},
-//     * )
-//     *
-//     */
-//    public function test1Action() {
-//
-//
-//        $data = array(
-//            'collapse_key' => 'do_not_collapse',
-//            'vib' => 1,
-//            'pw_msg' => 1,
-//            'p' => 5);
-//
-//        $registrationId = 'APA91bG_-Dkxjfh-6IxOiw6bJPs1KNs3Brw_Yh_lZ4b2TDBsurhe_fkWO6sj3LX-6QU0T77BOB1SJiUKuSLgy4GGKp_U0hKVMQ4v7z_mTPepN8dEMs3WXi9-j2m8BUAcmMa9LsiGfPpiqy40kOxXJ0FFjmX3ZX8XWA';
-//
-//        $messagea = 'REEA EAasd4 432432 23432423 REA Test';
-//
-//        $push_message = new AndroidMessage();
-//        $push_message->setGCM(true);
-//        $push_message->setMessage($messagea);
-//        $push_message->setDeviceIdentifier($registrationId);
-//        $push_message->setData($data);
-//
-//
-//        $RMS = $this->container->get('rms_push_notifications');
-//        $RMS->send($push_message);
-//
-//
-//        $response = new Response();
-//        $response->setStatusCode(200);
-//        $response->setContent(json_encode(array(
-//            'success' => true,
-//            'message' => 'Push message sent.',
-//        )));
-//        return $response;
-//    }
-//
+    /**
+     * This function uses RMS push notification bundle to send a push notification to the android device.
+     * 
+     * @param type $registrationId
+     * @param type $data
+     * @return type
+     * 
+     */
     public function notifyAndroid($registrationId, $data) {
 
         $push_message = new AndroidMessage();
