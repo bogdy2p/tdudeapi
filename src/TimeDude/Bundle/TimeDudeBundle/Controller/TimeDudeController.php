@@ -433,7 +433,7 @@ class TimeDudeController extends FOSRestController {
      *          {"name"="googleUid", "dataType"="string", "required"=true, "description"="The user's google id."},
      *          {"name"="registrationId",     "dataType"="string", "required"=true, "description"="The user's api registration ID."},
      *          {"name"="email", "dataType"="string", "required"=false, "description"="The user's email"},
-     *          {"name"="name",  "dataType"="integer", "required"=false, "description"="The user's name"},
+     *          {"name"="name",  "dataType"="string", "required"=false, "description"="The user's name"},
      * }
      * 		
      * )
