@@ -14,7 +14,7 @@ use JMS\Serializer\Annotation\Exclude;
 
 /**
  * @ORM\Entity(repositoryClass="TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUserRepository")
- * @ORM\Table(name="GoogleUsers")
+ * @ORM\Table(name="Users")
  * @ExclusionPolicy("all");
  */
 class TimeDudeUser {
@@ -38,11 +38,6 @@ class TimeDudeUser {
     protected $googleUid;
 
     /**
-     * @ORM\Column(type="string", name="registrationId", nullable=true)
-     */
-    protected $registrationId;
-
-    /**
      * @ORM\Column(type="string", name="email", nullable=true)
      */
     private $email;
@@ -62,12 +57,14 @@ class TimeDudeUser {
      */
     private $registrations;
 
+
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -78,7 +75,8 @@ class TimeDudeUser {
      *
      * @return TimeDudeUser
      */
-    public function setGoogleUid($googleUid) {
+    public function setGoogleUid($googleUid)
+    {
         $this->googleUid = $googleUid;
 
         return $this;
@@ -89,83 +87,9 @@ class TimeDudeUser {
      *
      * @return string
      */
-    public function getGoogleUid() {
+    public function getGoogleUid()
+    {
         return $this->googleUid;
-    }
-
-    /**
-     * Set registrationId
-     *
-     * @param string $registrationId
-     *
-     * @return TimeDudeUser
-     */
-    public function setRegistrationId($registrationId) {
-        $this->registrationId = $registrationId;
-
-        return $this;
-    }
-
-    /**
-     * Get registrationId
-     *
-     * @return string
-     */
-    public function getRegistrationId() {
-        return $this->registrationId;
-    }
-
-    /**
-     * Set lastname
-     *
-     * @param string $lastname
-     *
-     * @return TimeDudeUser
-     */
-    public function setLastname($lastname) {
-        $this->lastname = $lastname;
-
-        return $this;
-    }
-
-    /**
-     * Get lastname
-     *
-     * @return string
-     */
-    public function getLastname() {
-        return $this->lastname;
-    }
-
-    /**
-     * Add reward
-     *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward
-     *
-     * @return TimeDudeUser
-     */
-    public function addReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward) {
-        $this->rewards[] = $reward;
-
-        return $this;
-    }
-
-    /**
-     * Remove reward
-     *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward
-     */
-    public function removeReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward) {
-        $this->rewards->removeElement($reward);
-    }
-
-    /**
-     * Get rewards
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRewards() {
-        return $this->rewards;
     }
 
     /**
@@ -175,7 +99,8 @@ class TimeDudeUser {
      *
      * @return TimeDudeUser
      */
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->email = $email;
 
         return $this;
@@ -186,7 +111,8 @@ class TimeDudeUser {
      *
      * @return string
      */
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
@@ -197,7 +123,8 @@ class TimeDudeUser {
      *
      * @return TimeDudeUser
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
@@ -208,10 +135,44 @@ class TimeDudeUser {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
+    /**
+     * Add reward
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward
+     *
+     * @return TimeDudeUser
+     */
+    public function addReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward)
+    {
+        $this->rewards[] = $reward;
+
+        return $this;
+    }
+
+    /**
+     * Remove reward
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward
+     */
+    public function removeReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward)
+    {
+        $this->rewards->removeElement($reward);
+    }
+
+    /**
+     * Get rewards
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRewards()
+    {
+        return $this->rewards;
+    }
 
     /**
      * Add registration

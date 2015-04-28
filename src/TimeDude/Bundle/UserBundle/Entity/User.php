@@ -13,7 +13,7 @@ use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Exclude;
 /**
  * @ORM\Entity(repositoryClass="TimeDude\Bundle\UserBundle\Entity\UserRepository")
- * @ORM\Table(name="Api_User")
+ * @ORM\Table(name="Z_Admin_Users")
  * @ExclusionPolicy("all");
  */
 class User extends BaseUser {

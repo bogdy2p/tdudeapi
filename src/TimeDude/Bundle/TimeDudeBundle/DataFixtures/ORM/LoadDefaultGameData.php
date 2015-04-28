@@ -20,11 +20,12 @@ class LoadDefaultGameData extends AbstractFixture implements OrderedFixtureInter
 
         $game->setName('Time Dude');
         $game->setDeveloper("REEA");
-        
+        $game->setAppId('net.reea.TimeDude');
+        $game->setGcmapikey('AIzaSyD0SWi_s_gdWIgfWLZOVxoXYiAGOudTKQE');
         $manager->persist($game);
         $manager->flush();
 
-        echo 'Default Game loaded.';
+        echo 'TimeDude Game loaded.';
     }
 
 }
