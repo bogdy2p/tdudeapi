@@ -18,6 +18,7 @@ class Game {
 
     public function __construct() {
         $this->rewards = new ArrayCollection();
+        $this->registrations = new ArrayCollection();
     }
 
     /**
@@ -42,7 +43,14 @@ class Game {
      * @ORM\Column(name="appId", type="string", length=255, nullable=false)
      */
     private $appId;
-    
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="gcmApiKey", type="string", length=255, nullable=false)
+     */
+    private $gcmapikey;
+
     /**
      * @var string
      *
@@ -50,6 +58,11 @@ class Game {
      */
     private $developer;
 
+    /**
+     * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Registration", mappedBy="game")
+     */
+    private $registrations;
+    
     /**
      * Get id
      *
@@ -103,7 +116,6 @@ class Game {
         return $this->developer;
     }
 
-
     /**
      * Set appId
      *
@@ -111,8 +123,7 @@ class Game {
      *
      * @return Game
      */
-    public function setAppId($appId)
-    {
+    public function setAppId($appId) {
         $this->appId = $appId;
 
         return $this;
@@ -123,8 +134,64 @@ class Game {
      *
      * @return string
      */
-    public function getAppId()
-    {
+    public function getAppId() {
         return $this->appId;
+    }
+
+    /**
+     * Set gcmapikey
+     *
+     * @param string $gcmapikey
+     *
+     * @return Game
+     */
+    public function setGcmapikey($gcmapikey) {
+        $this->gcmapikey = $gcmapikey;
+
+        return $this;
+    }
+
+    /**
+     * Get gcmapikey
+     *
+     * @return string
+     */
+    public function getGcmapikey() {
+        return $this->gcmapikey;
+    }
+
+
+    /**
+     * Add registration
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Registration $registration
+     *
+     * @return Game
+     */
+    public function addRegistration(\TimeDude\Bundle\TimeDudeBundle\Entity\Registration $registration)
+    {
+        $this->registrations[] = $registration;
+
+        return $this;
+    }
+
+    /**
+     * Remove registration
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Registration $registration
+     */
+    public function removeRegistration(\TimeDude\Bundle\TimeDudeBundle\Entity\Registration $registration)
+    {
+        $this->registrations->removeElement($registration);
+    }
+
+    /**
+     * Get registrations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRegistrations()
+    {
+        return $this->registrations;
     }
 }

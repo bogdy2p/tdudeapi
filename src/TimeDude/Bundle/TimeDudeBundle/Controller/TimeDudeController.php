@@ -301,13 +301,12 @@ class TimeDudeController extends FOSRestController {
         if ($user) {
             $all_rewards = $user->getRewards();
             $game_rewards = array();
-            foreach ($all_rewards as $reward){
-                if ($reward->getGame() == $game){
+            foreach ($all_rewards as $reward) {
+                if ($reward->getGame() == $game) {
                     $game_rewards[] = $reward;
                 }
-            
             }
-            
+
             $user_information['number_of_calls'] = count($game_rewards);
             $reward_value = 0;
             foreach ($game_rewards as $reward) {
@@ -388,17 +387,17 @@ class TimeDudeController extends FOSRestController {
         $users = $this->getDoctrine()->getRepository("TimeDudeBundle:TimeDudeUser")->findAll();
         $games = $this->getDoctrine()->getRepository("TimeDudeBundle:Game")->findAll();
         $reward_types = $this->getDoctrine()->getRepository("TimeDudeBundle:RewardType")->findAll();
-        
-        
-        
-        
+
+
+
+
 
         $return_array = array();
 
         foreach ($users as $user) {
             $return_array['users'][ucfirst($user->getGoogleUid())] = $user->getName() . ' ' . $user->getEmail();
         }
-        
+
         foreach ($games as $game) {
             $return_array['games'][ucfirst($game->getId())] = $game->getName();
         }
@@ -406,7 +405,7 @@ class TimeDudeController extends FOSRestController {
         foreach ($reward_types as $reward_type) {
             $return_array['rewards'][ucfirst($reward_type->getId())] = $reward_type->getName();
         }
-        
+
         $response->setStatusCode(200);
         $response->setContent(json_encode(array(
             'success' => true,
@@ -492,13 +491,46 @@ class TimeDudeController extends FOSRestController {
      */
     public function notifyAndroid($registrationId, $data) {
 
+
+
         $push_message = new AndroidMessage();
         $push_message->setGCM(true);
         $push_message->setDeviceIdentifier($registrationId);
         $push_message->setData($data);
         $RMS = $this->container->get('rms_push_notifications')->send($push_message);
-
+    
         return $RMS;
+    }
+
+    
+    public function notifyAndroidNew($registrationId, $data, $apiKey) {
+        
+        
+        
+        
+    }
+
+
+    
+    
+    
+    /**
+     * @Route("/asd", name="asd")
+     * @Method("GET")
+     *
+     * @ApiDoc(
+     *      deprecated=TRUE,
+     * 		description = "Returns a list of all the users in the system. (DEVELOPMENT ONLY / WILL BE DISABLED)",
+     *      section="Z DEVELOPMENT Z",
+     * 		statusCodes = {
+     * 			200 = "Ok",
+     * 		},
+     * )
+     *
+     */
+    public function getAsdAction() {
+
+        return self::notifyAndroid(null, null);
     }
 
 }

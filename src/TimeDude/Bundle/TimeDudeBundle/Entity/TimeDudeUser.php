@@ -2,7 +2,6 @@
 
 namespace TimeDude\Bundle\TimeDudeBundle\Entity;
 
-
 use Doctrine\ORM\Mapping as ORM;
 // For setting validation constraints:
 use Symfony\Component\Validator\Constraints as Assert;
@@ -23,6 +22,7 @@ class TimeDudeUser {
     public function __construct() {
 
         $this->rewards = new ArrayCollection();
+        $this->registrations = new ArrayCollection();
     }
 
     /**
@@ -56,6 +56,11 @@ class TimeDudeUser {
      * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Reward", mappedBy="user")
      */
     private $rewards;
+
+    /**
+     * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Registration", mappedBy="user")
+     */
+    private $registrations;
 
     /**
      * Get id
@@ -163,7 +168,6 @@ class TimeDudeUser {
         return $this->rewards;
     }
 
-
     /**
      * Set email
      *
@@ -171,8 +175,7 @@ class TimeDudeUser {
      *
      * @return TimeDudeUser
      */
-    public function setEmail($email)
-    {
+    public function setEmail($email) {
         $this->email = $email;
 
         return $this;
@@ -183,8 +186,7 @@ class TimeDudeUser {
      *
      * @return string
      */
-    public function getEmail()
-    {
+    public function getEmail() {
         return $this->email;
     }
 
@@ -195,8 +197,7 @@ class TimeDudeUser {
      *
      * @return TimeDudeUser
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -207,8 +208,42 @@ class TimeDudeUser {
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
+    }
+
+
+    /**
+     * Add registration
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Registration $registration
+     *
+     * @return TimeDudeUser
+     */
+    public function addRegistration(\TimeDude\Bundle\TimeDudeBundle\Entity\Registration $registration)
+    {
+        $this->registrations[] = $registration;
+
+        return $this;
+    }
+
+    /**
+     * Remove registration
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Registration $registration
+     */
+    public function removeRegistration(\TimeDude\Bundle\TimeDudeBundle\Entity\Registration $registration)
+    {
+        $this->registrations->removeElement($registration);
+    }
+
+    /**
+     * Get registrations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRegistrations()
+    {
+        return $this->registrations;
     }
 }
