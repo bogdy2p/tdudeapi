@@ -166,10 +166,10 @@ class TimeDudeController extends FOSRestController {
             $lost_receive = 'lost';
         }
 
-        
+
         // Send the Push Notification to the Google Cloud.
-        
-        
+
+
         $message = "Redeem Items";
 
         $apikey = $game->getGcmApiKey();
@@ -177,9 +177,9 @@ class TimeDudeController extends FOSRestController {
             'googleuser' => $user,
             'game' => $game,
             'game_version' => $game->getVersion()
-            ]);
-        
-        if(!$registration){
+        ]);
+
+        if (!$registration) {
             $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
@@ -187,7 +187,7 @@ class TimeDudeController extends FOSRestController {
             )));
             return $response;
         }
-        
+
         $registration_id = $registration->getRegistrationId();
 
         $data = array(
@@ -216,7 +216,7 @@ class TimeDudeController extends FOSRestController {
      * @ApiDoc(
      *      deprecated=FALSE,
      * 		description = "Get User Information + Coin ammount.",
-     *      section="User",
+     *      section="Z DEVELOPMENT Z",
      * 		statusCodes = {
      * 			200 = "User Exists",
      * 			404 = "User not found."
@@ -242,16 +242,20 @@ class TimeDudeController extends FOSRestController {
         }
 
 
+        $registrations = $user->getRegistrations();
         $user_information = array();
 
 
-        $rewards = $user->getRewards();
-        $user_information['number_of_calls'] = count($rewards);
-        $reward_value = 0;
-        foreach ($rewards as $reward) {
-            $reward_value += $reward->getAmmount();
+        $user_information['email'] = $user->getEmail();
+        $user_information['name'] = $user->getFirstname() . ' ' . $user->getLastname();
+        $user_information['total_devices'] = count($registrations);
+
+        foreach ($registrations as $registration) {
+            $user_information['device_ids'][] = $registration->getDeviceId();
         }
-        $user_information['value'] = $reward_value;
+
+
+
 
         $response = new Response();
         $response->setStatusCode(200);
@@ -365,10 +369,6 @@ class TimeDudeController extends FOSRestController {
         $users = $this->getDoctrine()->getRepository("TimeDudeBundle:TimeDudeUser")->findAll();
         $games = $this->getDoctrine()->getRepository("TimeDudeBundle:Game")->findAll();
         $reward_types = $this->getDoctrine()->getRepository("TimeDudeBundle:RewardType")->findAll();
-
-
-
-
 
         $return_array = array();
 
@@ -495,6 +495,7 @@ class TimeDudeController extends FOSRestController {
      *          {"name"="googleUid", "dataType"="string", "required"=true, "description"="The user's google id."},
      *          {"name"="registrationKey", "dataType"="string", "required"=true, "description"="The user's registration key."},
      *          {"name"="gameId", "dataType"="string", "required"=true, "description"="The id of the game"},
+     *          {"name"="deviceId", "dataType"="string", "required"=true, "description"="The id of the device"},
      *          {"name"="game_version", "dataType"="string", "required"=true, "description"="The version of the game"},
      *       
      * }
@@ -512,12 +513,13 @@ class TimeDudeController extends FOSRestController {
         $response = new Response();
 
         $googleUid = $request->get('googleUid');
+        $deviceId = $request->get('deviceId');
         $registrationKey = $request->get('registrationKey');
         $gameId = $request->get('gameId');
         $version = $request->get('game_version');
 
 
-        if (empty($googleUid) || empty($registrationKey) || empty($gameId) || empty($version)) {
+        if (empty($googleUid) || empty($registrationKey) || empty($gameId) || empty($version) || empty($deviceId)) {
             $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
@@ -547,20 +549,20 @@ class TimeDudeController extends FOSRestController {
         }
 
 
-        $registration_already_exists = $this->getDoctrine()->getRepository('TimeDudeBundle:Registration')->findOneBy([
-            'googleuser' => $user,
+        $registration_already_exists_for_device = $this->getDoctrine()->getRepository('TimeDudeBundle:Registration')->findOneBy([
+            'user' => $user,
             'game' => $game,
-            'game_version' => $version
+            'deviceId' => $deviceId
         ]);
 
         $em = $this->getDoctrine()->getManager();
 
-        if (!$registration_already_exists) {
+        if (!$registration_already_exists_for_device) {
 
             $registration = new Registration();
-
-            $registration->setGoogleuser($user);
+            $registration->setUser($user);
             $registration->setGame($game);
+            $registration->setDeviceId($deviceId);
             $registration->setGameVersion($version);
             $registration->setRegistrationId($registrationKey);
 
@@ -570,21 +572,21 @@ class TimeDudeController extends FOSRestController {
             $response->setStatusCode(201);
             $response->setContent(json_encode(array(
                 'success' => true,
-                'message' => 'User ' . $user->getGoogleUid() . ' has been registered for game' . $game->getName() . ' version ' . $version
+                'message' => 'User ' . $user->getGoogleUid() . ' has registered device ' . $deviceId . ' for game ' . $game->getName() . ' version ' . $version
             )));
             return $response;
         }
 
-        $registration_already_exists->setRegistrationId($registrationKey);
-        $registration_already_exists->setGameVersion($version);
+        $registration_already_exists_for_device->setRegistrationId($registrationKey);
+        $registration_already_exists_for_device->setGameVersion($version);
 
-        $em->persist($registration_already_exists);
+        $em->persist($registration_already_exists_for_device);
         $em->flush();
 
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'Existing registration updated for user ' . $user->getGoogleUid()
+            'message' => 'Existing registration updated for user ' . $user->getGoogleUid() . ' and device ' . $deviceId
         )));
         return $response;
     }
@@ -612,7 +614,7 @@ class TimeDudeController extends FOSRestController {
 
     public function notifyAndroidNew($registrationId, $data, $apiKey) {
 
-             
+
         $registrationIds = array($registrationId);
         $fields = array
             (
@@ -660,19 +662,19 @@ class TimeDudeController extends FOSRestController {
 //        return self::notifyAndroid(null, null);
 
         $registration_id = 'APA91bGEIBO9bLyfY7HSNqnDz6tgoUFawIYPOxw7TaTnKBLTK9_3gNspATnXCkFnWxIj-Zb4D5HmAWhFVRDAViH05ed6IkPrdjRwaRGs98Och3agZHOOjbfKK87K8XZSLh4Cyesg46rptVbE62R2_1Y_wkDa5PDPTw';
-        
-         $data = array(
+
+        $data = array(
             'message' => '$message',
             'title' => 'Coin ammount changed.',
             'collapse_key' => 'do_not_collapse',
             'vib' => 1,
             'pw_msg' => 1,
             'p' => 5);
-        
+
         $apiKey = 'AIzaSyD0SWi_s_gdWIgfWLZOVxoXYiAGOudTKQE';
-        
-        
-        return self::notifyAndroidNew($registration_id,$data,$apiKey);
+
+
+        return self::notifyAndroidNew($registration_id, $data, $apiKey);
     }
 
 }

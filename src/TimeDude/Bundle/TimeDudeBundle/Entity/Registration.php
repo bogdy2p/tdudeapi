@@ -28,7 +28,7 @@ class Registration {
      * @ORM\JoinColumn(name="user",referencedColumnName="id")
      * 
      */
-    protected $googleuser;
+    protected $user;
 
     /**
      * @var Game
@@ -42,7 +42,14 @@ class Registration {
     /**
      * @var string
      *
-     * @ORM\Column(name="registration_key", type="string", length=255)
+     * @ORM\Column(name="deviceId", type="string", length=255)
+     */
+    private $deviceId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="registrationId", type="string", length=255)
      */
     private $registrationId;
 
@@ -53,7 +60,6 @@ class Registration {
      */
     private $game_version;
 
-   
 
     /**
      * Get id
@@ -63,6 +69,30 @@ class Registration {
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set deviceId
+     *
+     * @param string $deviceId
+     *
+     * @return Registration
+     */
+    public function setDeviceId($deviceId)
+    {
+        $this->deviceId = $deviceId;
+
+        return $this;
+    }
+
+    /**
+     * Get deviceId
+     *
+     * @return string
+     */
+    public function getDeviceId()
+    {
+        return $this->deviceId;
     }
 
     /**
@@ -114,27 +144,27 @@ class Registration {
     }
 
     /**
-     * Set googleuser
+     * Set user
      *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $googleuser
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $user
      *
      * @return Registration
      */
-    public function setGoogleuser(\TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $googleuser = null)
+    public function setUser(\TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $user = null)
     {
-        $this->googleuser = $googleuser;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
-     * Get googleuser
+     * Get user
      *
      * @return \TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser
      */
-    public function getGoogleuser()
+    public function getUser()
     {
-        return $this->googleuser;
+        return $this->user;
     }
 
     /**
