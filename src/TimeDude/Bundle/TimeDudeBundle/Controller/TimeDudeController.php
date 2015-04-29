@@ -424,15 +424,18 @@ class TimeDudeController extends FOSRestController {
      * 		description = "Call to create a new google user entry in the database.",
      *      section="User",
      * 		statusCodes = {
-     * 			201 = "User Has Been Created",
-     * 			400 = "Bad request. Already exists ?",
+     *                  200 = {"At least 2 Parameters Required","User Already Exists"},
+     * 			201 = "Account Has Been Created",
      *                  500 = "No token / Invalid API KEY",
      * 		},
      *      parameters={
      *          {"name"="googleUid", "dataType"="string", "required"=true, "description"="The user's google id."},
-     *          {"name"="registrationId",     "dataType"="string", "required"=true, "description"="The user's api registration ID."},
-     *          {"name"="email", "dataType"="string", "required"=false, "description"="The user's email"},
-     *          {"name"="name",  "dataType"="string", "required"=false, "description"="The user's name"},
+     *          {"name"="email", "dataType"="string", "required"=true, "description"="The user's email"},
+     *          {"name"="firstname",  "dataType"="string", "required"=false, "description"="The user's firstname"},
+     *          {"name"="lastname",  "dataType"="string", "required"=false, "description"="The user's lastname"},
+     *          {"name"="location",  "dataType"="string", "required"=false, "description"="The user's location"},
+     *          {"name"="language",  "dataType"="string", "required"=false, "description"="The user's language"},
+     *          {"name"="birthday",  "dataType"="string", "required"=false, "description"="The user's birthday"},
      * }
      * 		
      * )
@@ -448,26 +451,45 @@ class TimeDudeController extends FOSRestController {
         $response = new Response();
 
         $googleUid = $request->get('googleUid');
-        $registrationId = $request->get('registrationId');
         $email = $request->get('email');
-        $name = $request->get('name');
+        $firstname = $request->get('firstname');
+        $lastname = $request->get('lastname');
+        $location = $request->get('location');
+        $language = $request->get('language');
+        $birthday = $request->get('birthday');
 
 
-        if (empty($googleUid) || empty($registrationId) || empty($email)) {
+
+        if (empty($googleUid) || empty($email)) {
             $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
-                'message' => 'GoogleId , RegistrationId and Email are required.'
+                'message' => 'GoogleId , and Email are required.'
             )));
             return $response;
         }
 
+        $user_already_exists = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($googleUid);
+
+        if ($user_already_exists) {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'An user already exists for the specified google id'
+            )));
+            return $response;
+        }
+
+
         $newUser = new TimeDudeUser();
 
         $newUser->setGoogleUid($googleUid);
-        $newUser->setRegistrationId($registrationId);
         $newUser->setEmail($email);
-        $newUser->setName($name);
+        $newUser->setFirstname($firstname);
+        $newUser->setLastname($lastname);
+        $newUser->setLocation($location);
+        $newUser->setLanguage($language);
+        $newUser->setBirthday($birthday);
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($newUser);
@@ -498,22 +520,14 @@ class TimeDudeController extends FOSRestController {
         $push_message->setDeviceIdentifier($registrationId);
         $push_message->setData($data);
         $RMS = $this->container->get('rms_push_notifications')->send($push_message);
-    
+
         return $RMS;
     }
 
-    
     public function notifyAndroidNew($registrationId, $data, $apiKey) {
-        
-        
-        
         
     }
 
-
-    
-    
-    
     /**
      * @Route("/asd", name="asd")
      * @Method("GET")

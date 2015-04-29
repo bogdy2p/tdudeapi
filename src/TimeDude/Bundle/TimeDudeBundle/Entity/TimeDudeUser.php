@@ -43,9 +43,29 @@ class TimeDudeUser {
     private $email;
 
     /**
-     * @ORM\Column(type="string", name="name", nullable=true)
+     * @ORM\Column(type="string", name="firstname", nullable=true)
      */
-    private $name;
+    private $firstname;
+
+    /**
+     * @ORM\Column(type="string", name="lastname", nullable=true)
+     */
+    private $lastname;
+
+    /**
+     * @ORM\Column(type="string", name="location", nullable=true)
+     */
+    private $location;
+
+    /**
+     * @ORM\Column(type="string", name="language", nullable=true)
+     */
+    private $language;
+
+    /**
+     * @ORM\Column(type="string", name="birthday", nullable=true)
+     */
+    private $birthday;
 
     /**
      * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Reward", mappedBy="user")
@@ -117,27 +137,123 @@ class TimeDudeUser {
     }
 
     /**
-     * Set name
+     * Set firstname
      *
-     * @param string $name
+     * @param string $firstname
      *
      * @return TimeDudeUser
      */
-    public function setName($name)
+    public function setFirstname($firstname)
     {
-        $this->name = $name;
+        $this->firstname = $firstname;
 
         return $this;
     }
 
     /**
-     * Get name
+     * Get firstname
      *
      * @return string
      */
-    public function getName()
+    public function getFirstname()
     {
-        return $this->name;
+        return $this->firstname;
+    }
+
+    /**
+     * Set lastname
+     *
+     * @param string $lastname
+     *
+     * @return TimeDudeUser
+     */
+    public function setLastname($lastname)
+    {
+        $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    /**
+     * Get lastname
+     *
+     * @return string
+     */
+    public function getLastname()
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * Set location
+     *
+     * @param string $location
+     *
+     * @return TimeDudeUser
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get location
+     *
+     * @return string
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * Set language
+     *
+     * @param string $language
+     *
+     * @return TimeDudeUser
+     */
+    public function setLanguage($language)
+    {
+        $this->language = $language;
+
+        return $this;
+    }
+
+    /**
+     * Get language
+     *
+     * @return string
+     */
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    /**
+     * Set birthday
+     *
+     * @param string $birthday
+     *
+     * @return TimeDudeUser
+     */
+    public function setBirthday($birthday)
+    {
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    /**
+     * Get birthday
+     *
+     * @return string
+     */
+    public function getBirthday()
+    {
+        return $this->birthday;
     }
 
     /**
