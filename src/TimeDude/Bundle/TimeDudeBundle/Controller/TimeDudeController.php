@@ -166,9 +166,29 @@ class TimeDudeController extends FOSRestController {
             $lost_receive = 'lost';
         }
 
+        
+        // Send the Push Notification to the Google Cloud.
+        
+        
         $message = "Redeem Items";
 
-        $registration_id = $user->getRegistrationId();
+        $apikey = $game->getGcmApiKey();
+        $registration = $this->getDoctrine()->getRepository('TimeDudeBundle:Registration')->findOneBy([
+            'googleuser' => $user,
+            'game' => $game,
+            'game_version' => $game->getVersion()
+            ]);
+        
+        if(!$registration){
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'This user is not registered'
+            )));
+            return $response;
+        }
+        
+        $registration_id = $registration->getRegistrationId();
 
         $data = array(
             'message' => $message,
@@ -178,7 +198,7 @@ class TimeDudeController extends FOSRestController {
             'pw_msg' => 1,
             'p' => 5);
 
-        $notify = self::notifyAndroid($registration_id, $data);
+        $notify = self::notifyAndroidNew($registration_id, $data, $apikey);
 
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
@@ -325,7 +345,6 @@ class TimeDudeController extends FOSRestController {
         return $response;
     }
 
-
     /**
      * @Route("/list_database_informations", name="list_db_information")
      * @Method("GET")
@@ -470,8 +489,6 @@ class TimeDudeController extends FOSRestController {
      * 		description = "Call to create/update a user's GCM registration entry in the database.",
      *      section="User",
      * 		statusCodes = {
-     *                  200 = {"At least 2 Parameters Required","User Already Exists"},
-     * 			201 = "Account Has Been Created",
      *                  500 = "No token / Invalid API KEY",
      * 		},
      *      parameters={
@@ -594,13 +611,30 @@ class TimeDudeController extends FOSRestController {
     }
 
     public function notifyAndroidNew($registrationId, $data, $apiKey) {
-        $push_message = new AndroidMessage();
-        $push_message->setGCM(true);
-        $push_message->setDeviceIdentifier($registrationId);
-        $push_message->setData($data);
-        $RMS = $this->container->get('rms_push_notifications')->send($push_message);
 
-        return $RMS;
+             
+        $registrationIds = array($registrationId);
+        $fields = array
+            (
+            'registration_ids' => $registrationIds,
+            'data' => $data
+        );
+        $headers = array
+            (
+            'Authorization: key=' . $apiKey,
+            'Content-Type: application/json'
+        );
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://android.googleapis.com/gcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 
     /**
@@ -619,21 +653,26 @@ class TimeDudeController extends FOSRestController {
      */
     public function getAsdAction() {
 
+
+//        $notify = self::notifyAndroid($registration_id, $data);
+//
+//        return $notify;
+//        return self::notifyAndroid(null, null);
+
         $registration_id = 'APA91bGEIBO9bLyfY7HSNqnDz6tgoUFawIYPOxw7TaTnKBLTK9_3gNspATnXCkFnWxIj-Zb4D5HmAWhFVRDAViH05ed6IkPrdjRwaRGs98Och3agZHOOjbfKK87K8XZSLh4Cyesg46rptVbE62R2_1Y_wkDa5PDPTw';
-        $message = 'ASD';
-        $data = array(
-            'message' => $message,
+        
+         $data = array(
+            'message' => '$message',
             'title' => 'Coin ammount changed.',
             'collapse_key' => 'do_not_collapse',
             'vib' => 1,
             'pw_msg' => 1,
             'p' => 5);
-
-        $notify = self::notifyAndroid($registration_id, $data);
         
-        return $notify;
+        $apiKey = 'AIzaSyD0SWi_s_gdWIgfWLZOVxoXYiAGOudTKQE';
         
-//        return self::notifyAndroid(null, null);
+        
+        return self::notifyAndroidNew($registration_id,$data,$apiKey);
     }
 
 }

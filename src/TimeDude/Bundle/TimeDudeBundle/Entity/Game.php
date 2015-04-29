@@ -57,6 +57,14 @@ class Game {
      * @ORM\Column(name="developer", type="string", length=255)
      */
     private $developer;
+    
+     /**
+     * @var int
+     *
+     * @ORM\Column(name="version", type="integer")
+     */
+    private $version;
+
 
     /**
      * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Registration", mappedBy="game")
@@ -193,5 +201,29 @@ class Game {
     public function getRegistrations()
     {
         return $this->registrations;
+    }
+
+    /**
+     * Set version
+     *
+     * @param integer $version
+     *
+     * @return Game
+     */
+    public function setVersion($version)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * Get version
+     *
+     * @return integer
+     */
+    public function getVersion()
+    {
+        return $this->version;
     }
 }
