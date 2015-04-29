@@ -52,16 +52,16 @@ security:
             anonymous:  false
         # tasks should not be accesible unless logged in / authenticated
         wsse_secured2:
-            pattern:    /api/v1/newgameuser
+            pattern:    /api/v1/newuser
             stateless:  true
             wsse:       true
             anonymous:  false
             # tasks should not be accesible unless logged in / authenticated
-#        wsse_secured_options:
-#            pattern:    /api/v1/options.*
-#            stateless:  true
-#            wsse:       true
-#            anonymous:  false
+        wsse_secured3:
+            pattern:    /api/v1/registration
+            stateless:  true
+            wsse:       true
+            anonymous:  false
 #        wsse_secured_references:
 #            pattern:    /api/v1/references.*
 #            stateless:  true

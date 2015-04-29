@@ -18,6 +18,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\File\File;
 use JMS\Serializer\SerializationContext;
 use TimeDude\Bundle\TimeDudeBundle\Entity\Reward;
+use TimeDude\Bundle\TimeDudeBundle\Entity\Registration;
 use TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser;
 use TimeDude\Bundle\UserBundle\Entity\User;
 
@@ -324,48 +325,6 @@ class TimeDudeController extends FOSRestController {
         return $response;
     }
 
-    /**
-     * @Route("/itemtypes", name="getitemtypes")
-     * @Method("GET")
-     *
-     * @ApiDoc(
-     *      deprecated=FALSE,
-     * 		description = "Returns true if the user has been found by an id, or false.",
-     *      section="Item Related",
-     * 		statusCodes = {
-     * 			200 = "Ok",
-     * 		},
-     * )
-     *
-     */
-    public function getItemTypesAction() {
-
-        $rewards = $this->getDoctrine()->getRepository("TimeDudeBundle:RewardType")->findAll();
-        $response = new Response();
-
-        if (!$rewards) {
-            $response->setStatusCode(200);
-            $response->setContent(json_encode(array(
-                'success' => false,
-                'message' => 'There are no reward types in the database.'
-            )));
-            return $response;
-        }
-
-        $return_array = array();
-
-        foreach ($rewards as $reward) {
-            $return_array[ucfirst($reward->getName())] = $reward->getId();
-        }
-
-        $response->setStatusCode(200);
-        $response->setContent(json_encode(array(
-            'success' => true,
-            'message' => 'Listing item types availlable.',
-            'rewards' => $return_array
-        )));
-        return $response;
-    }
 
     /**
      * @Route("/list_database_informations", name="list_db_information")
@@ -416,7 +375,7 @@ class TimeDudeController extends FOSRestController {
     }
 
     /**
-     * @Route("/newgameuser", name="new_google_user")
+     * @Route("/newuser", name="new_google_user")
      * @Method("Post")
      *
      * @ApiDoc(
@@ -482,7 +441,6 @@ class TimeDudeController extends FOSRestController {
 
 
         $newUser = new TimeDudeUser();
-
         $newUser->setGoogleUid($googleUid);
         $newUser->setEmail($email);
         $newUser->setFirstname($firstname);
@@ -499,6 +457,117 @@ class TimeDudeController extends FOSRestController {
         $response->setContent(json_encode(array(
             'success' => true,
             'message' => 'A user for acccount ' . $email . ' has been registered.'
+        )));
+        return $response;
+    }
+
+    /**
+     * @Route("/registration", name="put_user_registration")
+     * @Method("PUT")
+     *
+     * @ApiDoc(
+     *      deprecated=FALSE,
+     * 		description = "Call to create/update a user's GCM registration entry in the database.",
+     *      section="User",
+     * 		statusCodes = {
+     *                  200 = {"At least 2 Parameters Required","User Already Exists"},
+     * 			201 = "Account Has Been Created",
+     *                  500 = "No token / Invalid API KEY",
+     * 		},
+     *      parameters={
+     *          {"name"="googleUid", "dataType"="string", "required"=true, "description"="The user's google id."},
+     *          {"name"="registrationKey", "dataType"="string", "required"=true, "description"="The user's registration key."},
+     *          {"name"="gameId", "dataType"="string", "required"=true, "description"="The id of the game"},
+     *          {"name"="game_version", "dataType"="string", "required"=true, "description"="The version of the game"},
+     *       
+     * }
+     * 		
+     * )
+     *
+     */
+    public function putUserGameRegistrationAction(Request $request) {
+
+        $user_making_the_call = $this->getUser();
+        $http_call_by = $user_making_the_call->getUsername();
+
+
+        $date = new \DateTime();
+        $response = new Response();
+
+        $googleUid = $request->get('googleUid');
+        $registrationKey = $request->get('registrationKey');
+        $gameId = $request->get('gameId');
+        $version = $request->get('game_version');
+
+
+        if (empty($googleUid) || empty($registrationKey) || empty($gameId) || empty($version)) {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'Parameters missing.'
+            )));
+            return $response;
+        }
+
+        $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($googleUid);
+        if (!$user) {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'Google Uid is invalid'
+            )));
+            return $response;
+        }
+
+        $game = $this->getDoctrine()->getRepository('TimeDudeBundle:Game')->find($gameId);
+        if (!$game) {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'Game Id is invalid.'
+            )));
+            return $response;
+        }
+
+
+        $registration_already_exists = $this->getDoctrine()->getRepository('TimeDudeBundle:Registration')->findOneBy([
+            'googleuser' => $user,
+            'game' => $game,
+            'game_version' => $version
+        ]);
+
+        $em = $this->getDoctrine()->getManager();
+
+        if (!$registration_already_exists) {
+
+            $registration = new Registration();
+
+            $registration->setGoogleuser($user);
+            $registration->setGame($game);
+            $registration->setGameVersion($version);
+            $registration->setRegistrationId($registrationKey);
+
+            $em->persist($registration);
+            $em->flush();
+
+            $response->setStatusCode(201);
+            $response->setContent(json_encode(array(
+                'success' => true,
+                'message' => 'User ' . $user->getGoogleUid() . ' has been registered for game' . $game->getName() . ' version ' . $version
+            )));
+            return $response;
+        }
+
+        $registration_already_exists->setRegistrationId($registrationKey);
+        $registration_already_exists->setGameVersion($version);
+
+        $em->persist($registration_already_exists);
+        $em->flush();
+
+        $response->setStatusCode(201);
+        $response->setContent(json_encode(array(
+            'success' => true,
+            'message' => 'Existing registration updated for user ' . $user->getGoogleUid()
         )));
         return $response;
     }
@@ -525,7 +594,13 @@ class TimeDudeController extends FOSRestController {
     }
 
     public function notifyAndroidNew($registrationId, $data, $apiKey) {
-        
+        $push_message = new AndroidMessage();
+        $push_message->setGCM(true);
+        $push_message->setDeviceIdentifier($registrationId);
+        $push_message->setData($data);
+        $RMS = $this->container->get('rms_push_notifications')->send($push_message);
+
+        return $RMS;
     }
 
     /**
@@ -544,7 +619,21 @@ class TimeDudeController extends FOSRestController {
      */
     public function getAsdAction() {
 
-        return self::notifyAndroid(null, null);
+        $registration_id = 'APA91bGEIBO9bLyfY7HSNqnDz6tgoUFawIYPOxw7TaTnKBLTK9_3gNspATnXCkFnWxIj-Zb4D5HmAWhFVRDAViH05ed6IkPrdjRwaRGs98Och3agZHOOjbfKK87K8XZSLh4Cyesg46rptVbE62R2_1Y_wkDa5PDPTw';
+        $message = 'ASD';
+        $data = array(
+            'message' => $message,
+            'title' => 'Coin ammount changed.',
+            'collapse_key' => 'do_not_collapse',
+            'vib' => 1,
+            'pw_msg' => 1,
+            'p' => 5);
+
+        $notify = self::notifyAndroid($registration_id, $data);
+        
+        return $notify;
+        
+//        return self::notifyAndroid(null, null);
     }
 
 }

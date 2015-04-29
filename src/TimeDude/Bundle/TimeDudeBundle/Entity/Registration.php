@@ -25,7 +25,7 @@ class Registration {
      * @var User
      * 
      * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser", inversedBy="rewards")
-     * @ORM\JoinColumn(name="googleuser",referencedColumnName="id")
+     * @ORM\JoinColumn(name="user",referencedColumnName="id")
      * 
      */
     protected $googleuser;
@@ -42,7 +42,7 @@ class Registration {
     /**
      * @var string
      *
-     * @ORM\Column(name="registrationId", type="string", length=255)
+     * @ORM\Column(name="registration_key", type="string", length=255)
      */
     private $registrationId;
 
