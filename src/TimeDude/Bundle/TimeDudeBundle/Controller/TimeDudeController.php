@@ -173,22 +173,25 @@ class TimeDudeController extends FOSRestController {
         $message = "Redeem Items";
 
         $apikey = $game->getGcmApiKey();
-        $registration = $this->getDoctrine()->getRepository('TimeDudeBundle:Registration')->findOneBy([
-            'googleuser' => $user,
+        $registrations = $this->getDoctrine()->getRepository('TimeDudeBundle:Registration')->findBy([
+            'user' => $user,
             'game' => $game,
             'game_version' => $game->getVersion()
         ]);
 
-        if (!$registration) {
+        if (!$registrations) {
             $response->setStatusCode(200);
             $response->setContent(json_encode(array(
                 'success' => false,
-                'message' => 'This user is not registered'
+                'message' => 'This user is not registered with any device for this game.'
             )));
             return $response;
         }
+        $registration_ids = array();
+        foreach ($registrations as $registration) {
+            $registration_ids[] = $registration->getRegistrationId();
+        }
 
-        $registration_id = $registration->getRegistrationId();
 
         $data = array(
             'message' => $message,
@@ -198,13 +201,32 @@ class TimeDudeController extends FOSRestController {
             'pw_msg' => 1,
             'p' => 5);
 
-        $notify = self::notifyAndroidNew($registration_id, $data, $apikey);
+        $notify_responses = array();
+        foreach ($registration_ids as $registration_id) {
+            $notify_responses[] = json_decode(self::notifyAndroidNew($registration_id, $data, $apikey), true);
+        }
+
+
+        //If any of the notify Responses return FALSE , check the ERROR , and if it is 
+        // INVALID REGISTRATION , REMOVE THE REGISTRATION FROM OUR DATABASE ?
+        $registration_keys_to_remove = array();
+        
+        foreach ($notify_responses as $notify_response) {
+            if ($notify_response['success'] == false) {
+//                die("IT IZ FALSE");
+                if($notify_response['results'][0]['error'] == "InvalidRegistration"){
+                    $registration_keys_to_remove[] = $registration_id;
+                }
+            }
+        }
+
 
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
             'message' => 'User ' . $user->getId() . ' ' . $lost_receive . ' ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $game->getName(),
-            'notify' => $notify
+            'notify_responses' => $notify_responses,
+            'should_be_removed' => $registration_keys_to_remove
         )));
         return $response;
     }
@@ -636,6 +658,10 @@ class TimeDudeController extends FOSRestController {
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
         $result = curl_exec($ch);
         curl_close($ch);
+
+
+//        echo $result;
+//        die();
         return $result;
     }
 
@@ -662,7 +688,7 @@ class TimeDudeController extends FOSRestController {
 //        return self::notifyAndroid(null, null);
 
         $registration_id = 'APA91bGEIBO9bLyfY7HSNqnDz6tgoUFawIYPOxw7TaTnKBLTK9_3gNspATnXCkFnWxIj-Zb4D5HmAWhFVRDAViH05ed6IkPrdjRwaRGs98Och3agZHOOjbfKK87K8XZSLh4Cyesg46rptVbE62R2_1Y_wkDa5PDPTw';
-
+        
         $data = array(
             'message' => '$message',
             'title' => 'Coin ammount changed.',
