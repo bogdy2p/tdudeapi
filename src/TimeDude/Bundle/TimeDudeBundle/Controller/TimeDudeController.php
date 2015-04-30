@@ -395,7 +395,7 @@ class TimeDudeController extends FOSRestController {
         $return_array = array();
 
         foreach ($users as $user) {
-            $return_array['users'][ucfirst($user->getGoogleUid())] = $user->getName() . ' ' . $user->getEmail();
+            $return_array['users'][ucfirst($user->getGoogleUid())] = $user->getFirstname() . ' ' . $user->getEmail();
         }
 
         foreach ($games as $game) {
