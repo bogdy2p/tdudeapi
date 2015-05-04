@@ -75,7 +75,7 @@ class TimeDudeController extends FOSRestController {
      *
      * @ApiDoc(
      *      deprecated=FALSE,
-     * 		description = "DESCRIPTION HERE.",
+     * 		description = "Call used to add items to a user in a specified game",
      *      section="RedeemItems",
      * 		statusCodes = {
      * 			201 = "User Has Been Rewarded / Penalized",
@@ -659,48 +659,45 @@ class TimeDudeController extends FOSRestController {
         $result = curl_exec($ch);
         curl_close($ch);
 
-
-//        echo $result;
-//        die();
         return $result;
     }
 
-    /**
-     * @Route("/asd", name="asd")
-     * @Method("GET")
-     *
-     * @ApiDoc(
-     *      deprecated=TRUE,
-     * 		description = "Returns a list of all the users in the system. (DEVELOPMENT ONLY / WILL BE DISABLED)",
-     *      section="Z DEVELOPMENT Z",
-     * 		statusCodes = {
-     * 			200 = "Ok",
-     * 		},
-     * )
-     *
-     */
-    public function getAsdAction() {
-
-
-//        $notify = self::notifyAndroid($registration_id, $data);
+//    /**
+//     * @Route("/asd", name="asd")
+//     * @Method("GET")
+//     *
+//     * @ApiDoc(
+//     *      deprecated=TRUE,
+//     * 		description = "Returns a list of all the users in the system. (DEVELOPMENT ONLY / WILL BE DISABLED)",
+//     *      section="Z DEVELOPMENT Z",
+//     * 		statusCodes = {
+//     * 			200 = "Ok",
+//     * 		},
+//     * )
+//     *
+//     */
+//    public function getAsdAction() {
 //
-//        return $notify;
-//        return self::notifyAndroid(null, null);
-
-        $registration_id = 'APA91bGEIBO9bLyfY7HSNqnDz6tgoUFawIYPOxw7TaTnKBLTK9_3gNspATnXCkFnWxIj-Zb4D5HmAWhFVRDAViH05ed6IkPrdjRwaRGs98Och3agZHOOjbfKK87K8XZSLh4Cyesg46rptVbE62R2_1Y_wkDa5PDPTw';
-        
-        $data = array(
-            'message' => '$message',
-            'title' => 'Coin ammount changed.',
-            'collapse_key' => 'do_not_collapse',
-            'vib' => 1,
-            'pw_msg' => 1,
-            'p' => 5);
-
-        $apiKey = 'AIzaSyD0SWi_s_gdWIgfWLZOVxoXYiAGOudTKQE';
-
-
-        return self::notifyAndroidNew($registration_id, $data, $apiKey);
-    }
+//
+////        $notify = self::notifyAndroid($registration_id, $data);
+////
+////        return $notify;
+////        return self::notifyAndroid(null, null);
+//
+//        $registration_id = 'PA91bGEIBO9bLyfY7HSNqnDz6tgoUFawIYPOxw7TaTnKBLTK9_3gNspATnXCkFnWxIj-Zb4D5HmAWhFVRDAViH05ed6IkPrdjRwaRGs98Och3agZHOOjbfKK87K8XZSLh4Cyesg46rptVbE62R2_1Y_wkDa5PDPTw';
+//        
+//        $data = array(
+//            'message' => '$message',
+//            'title' => 'Coin ammount changed.',
+//            'collapse_key' => 'do_not_collapse',
+//            'vib' => 1,
+//            'pw_msg' => 1,
+//            'p' => 5);
+//
+//        $apiKey = 'AIzaSyD0SWi_s_gdWIgfWLZOVxoXYiAGOudTKQE';
+//
+//
+//        return self::notifyAndroidNew($registration_id, $data, $apiKey);
+//    }
 
 }
