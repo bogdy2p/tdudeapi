@@ -348,10 +348,6 @@ class TimeDudeController extends FOSRestController {
         }
 
 //        die('verify');
-
-
-
-
 //
 //        $reward = new Reward();
 //        $reward->setAmmount($spent_ammount);
@@ -491,7 +487,8 @@ class TimeDudeController extends FOSRestController {
      * 		},
      *      requirements = {
      *          {"name" = "userId", "requirement" = "true"},
-     *          {"name" = "gameId", "requirement" = "true"}
+     *          {"name" = "gameId", "requirement" = "true"},
+     *          {"name" = "rewardTypeId", "requirement" = "true"}
      * }
      * 		
      * )
@@ -502,6 +499,7 @@ class TimeDudeController extends FOSRestController {
 
         $userId = $request->get('userId');
         $gameId = $request->get('gameId');
+        $rewardTypeId = $request->get('rewardTypeId');
 
         if (!isset($userId) || !isset($gameId)) {
             $response->setStatusCode(200);
@@ -532,24 +530,39 @@ class TimeDudeController extends FOSRestController {
             return $response;
         }
 
-        $user_information = array();
-
-        if ($user) {
-            $all_rewards = $user->getRewards();
-            $game_rewards = array();
-            foreach ($all_rewards as $reward) {
-                if ($reward->getGame() == $game) {
-                    $game_rewards[] = $reward;
-                }
-            }
-
-            $user_information['number_of_calls'] = count($game_rewards);
-            $reward_value = 0;
-            foreach ($game_rewards as $reward) {
-                $reward_value += $reward->getAmmount();
-            }
-            $user_information['value'] = $reward_value;
+        $rewardType = $this->getDoctrine()->getRepository('TimeDudeBundle:RewardType')->findOneById($rewardTypeId);
+        if (!$rewardType) {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'The $rewardType id provided is wrong.'
+            )));
+            return $response;
         }
+
+
+
+        $ammount = $this->getDoctrine()->getRepository('TimeDudeBundle:Ammount')->findOneBy([
+            'user' => $user,
+            'game' => $game,
+            'rewardtype' => $rewardType,
+        ]);
+
+        if (!$ammount) {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'no $user_information'
+            )));
+            return $response;
+        }
+
+        $user_information = array();
+        $value = $ammount->getAmmount();
+        $user_information['value'] = $value;
+
+
+
 
 
         $response->setStatusCode(200);
