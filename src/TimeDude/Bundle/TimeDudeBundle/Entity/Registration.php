@@ -24,7 +24,7 @@ class Registration {
     /**
      * @var User
      * 
-     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser", inversedBy="rewards")
+     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser", inversedBy="rewardlogs")
      * @ORM\JoinColumn(name="user",referencedColumnName="id")
      * 
      */

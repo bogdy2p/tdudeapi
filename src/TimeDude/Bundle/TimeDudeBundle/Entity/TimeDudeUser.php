@@ -21,7 +21,8 @@ class TimeDudeUser {
 
     public function __construct() {
 
-        $this->rewards = new ArrayCollection();
+        $this->ammounts = new ArrayCollection();
+        $this->rewardlogs = new ArrayCollection();
         $this->registrations = new ArrayCollection();
     }
 
@@ -68,14 +69,20 @@ class TimeDudeUser {
     private $birthday;
 
     /**
-     * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Reward", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Ammount", mappedBy="user")
      */
-    private $rewards;
+    private $ammounts;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\RewardLog", mappedBy="user")
+     */
+    private $rewardlogs;
 
     /**
      * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Registration", mappedBy="user")
      */
     private $registrations;
+
 
 
     /**
@@ -257,37 +264,71 @@ class TimeDudeUser {
     }
 
     /**
-     * Add reward
+     * Add ammount
      *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Ammount $ammount
      *
      * @return TimeDudeUser
      */
-    public function addReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward)
+    public function addAmmount(\TimeDude\Bundle\TimeDudeBundle\Entity\Ammount $ammount)
     {
-        $this->rewards[] = $reward;
+        $this->ammounts[] = $ammount;
 
         return $this;
     }
 
     /**
-     * Remove reward
+     * Remove ammount
      *
-     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Ammount $ammount
      */
-    public function removeReward(\TimeDude\Bundle\TimeDudeBundle\Entity\Reward $reward)
+    public function removeAmmount(\TimeDude\Bundle\TimeDudeBundle\Entity\Ammount $ammount)
     {
-        $this->rewards->removeElement($reward);
+        $this->ammounts->removeElement($ammount);
     }
 
     /**
-     * Get rewards
+     * Get ammounts
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getRewards()
+    public function getAmmounts()
     {
-        return $this->rewards;
+        return $this->ammounts;
+    }
+
+    /**
+     * Add rewardlog
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\RewardLog $rewardlog
+     *
+     * @return TimeDudeUser
+     */
+    public function addRewardlog(\TimeDude\Bundle\TimeDudeBundle\Entity\RewardLog $rewardlog)
+    {
+        $this->rewardlogs[] = $rewardlog;
+
+        return $this;
+    }
+
+    /**
+     * Remove rewardlog
+     *
+     * @param \TimeDude\Bundle\TimeDudeBundle\Entity\RewardLog $rewardlog
+     */
+    public function removeRewardlog(\TimeDude\Bundle\TimeDudeBundle\Entity\RewardLog $rewardlog)
+    {
+        $this->rewardlogs->removeElement($rewardlog);
+    }
+
+    /**
+     * Get rewardlogs
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRewardlogs()
+    {
+        return $this->rewardlogs;
     }
 
     /**

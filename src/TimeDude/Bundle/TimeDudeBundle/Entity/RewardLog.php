@@ -8,10 +8,10 @@ use TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser;
 /**
  * Reward
  *
- * @ORM\Table(name="Rewards")
- * @ORM\Entity(repositoryClass="TimeDude\Bundle\TimeDudeBundle\Entity\RewardRepository")
+ * @ORM\Table(name="Reward_Logs")
+ * @ORM\Entity(repositoryClass="TimeDude\Bundle\TimeDudeBundle\Entity\RewardLogRepository")
  */
-class Reward {
+class RewardLog {
 
     /**
      * @var integer
@@ -25,7 +25,7 @@ class Reward {
     /**
      * @var Game 
      * 
-     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Game", inversedBy="rewards")
+     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Game", inversedBy="rewardlogs")
      * @ORM\JoinColumn(name="game",referencedColumnName="id", nullable=false)
      */
     private $game;
@@ -54,7 +54,7 @@ class Reward {
     /**
      * @var User
      * 
-     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser", inversedBy="rewards")
+     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser", inversedBy="rewardlogs")
      * @ORM\JoinColumn(name="user_id",referencedColumnName="id")
      * 
      */
@@ -63,11 +63,13 @@ class Reward {
     /**
      * @var RewardType 
      * 
-     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\RewardType", inversedBy="rewards")
+     * @ORM\ManyToOne(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\RewardType", inversedBy="rewardlogs")
      * @ORM\JoinColumn(name="reward_type",referencedColumnName="id", nullable=false)
      */
     private $rewardtype;
 
+
+   
 
     /**
      * Get id
@@ -84,7 +86,7 @@ class Reward {
      *
      * @param integer $ammount
      *
-     * @return Reward
+     * @return RewardLog
      */
     public function setAmmount($ammount)
     {
@@ -108,7 +110,7 @@ class Reward {
      *
      * @param string $httpcallby
      *
-     * @return Reward
+     * @return RewardLog
      */
     public function setHttpcallby($httpcallby)
     {
@@ -132,7 +134,7 @@ class Reward {
      *
      * @param \DateTime $date
      *
-     * @return Reward
+     * @return RewardLog
      */
     public function setDate($date)
     {
@@ -156,7 +158,7 @@ class Reward {
      *
      * @param \TimeDude\Bundle\TimeDudeBundle\Entity\Game $game
      *
-     * @return Reward
+     * @return RewardLog
      */
     public function setGame(\TimeDude\Bundle\TimeDudeBundle\Entity\Game $game)
     {
@@ -180,7 +182,7 @@ class Reward {
      *
      * @param \TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $user
      *
-     * @return Reward
+     * @return RewardLog
      */
     public function setUser(\TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser $user = null)
     {
@@ -204,7 +206,7 @@ class Reward {
      *
      * @param \TimeDude\Bundle\TimeDudeBundle\Entity\RewardType $rewardtype
      *
-     * @return Reward
+     * @return RewardLog
      */
     public function setRewardtype(\TimeDude\Bundle\TimeDudeBundle\Entity\RewardType $rewardtype)
     {

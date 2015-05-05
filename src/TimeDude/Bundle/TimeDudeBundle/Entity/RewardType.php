@@ -17,7 +17,7 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 class RewardType {
 
     public function __construct() {
-        $this->rewards = new ArrayCollection();
+        $this->rewardlogs = new ArrayCollection();
     }
 
     /**
@@ -36,12 +36,14 @@ class RewardType {
      */
     private $name;
 
+
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -49,9 +51,11 @@ class RewardType {
      * Set name
      *
      * @param string $name
+     *
      * @return RewardType
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
@@ -60,10 +64,10 @@ class RewardType {
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
-
 }

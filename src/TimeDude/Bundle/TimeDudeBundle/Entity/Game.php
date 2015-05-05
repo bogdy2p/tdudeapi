@@ -17,7 +17,8 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 class Game {
 
     public function __construct() {
-        $this->rewards = new ArrayCollection();
+        $this->ammounts = new ArrayCollection();
+        $this->rewardlogs = new ArrayCollection();
         $this->registrations = new ArrayCollection();
     }
 
@@ -57,26 +58,27 @@ class Game {
      * @ORM\Column(name="developer", type="string", length=255)
      */
     private $developer;
-    
-     /**
+
+    /**
      * @var int
      *
      * @ORM\Column(name="version", type="integer")
      */
     private $version;
 
-
     /**
      * @ORM\OneToMany(targetEntity="TimeDude\Bundle\TimeDudeBundle\Entity\Registration", mappedBy="game")
      */
     private $registrations;
-    
+
+
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -87,7 +89,8 @@ class Game {
      *
      * @return Game
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
@@ -98,30 +101,9 @@ class Game {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
-    }
-
-    /**
-     * Set developer
-     *
-     * @param string $developer
-     *
-     * @return Game
-     */
-    public function setDeveloper($developer) {
-        $this->developer = $developer;
-
-        return $this;
-    }
-
-    /**
-     * Get developer
-     *
-     * @return string
-     */
-    public function getDeveloper() {
-        return $this->developer;
     }
 
     /**
@@ -131,7 +113,8 @@ class Game {
      *
      * @return Game
      */
-    public function setAppId($appId) {
+    public function setAppId($appId)
+    {
         $this->appId = $appId;
 
         return $this;
@@ -142,7 +125,8 @@ class Game {
      *
      * @return string
      */
-    public function getAppId() {
+    public function getAppId()
+    {
         return $this->appId;
     }
 
@@ -153,7 +137,8 @@ class Game {
      *
      * @return Game
      */
-    public function setGcmapikey($gcmapikey) {
+    public function setGcmapikey($gcmapikey)
+    {
         $this->gcmapikey = $gcmapikey;
 
         return $this;
@@ -164,10 +149,58 @@ class Game {
      *
      * @return string
      */
-    public function getGcmapikey() {
+    public function getGcmapikey()
+    {
         return $this->gcmapikey;
     }
 
+    /**
+     * Set developer
+     *
+     * @param string $developer
+     *
+     * @return Game
+     */
+    public function setDeveloper($developer)
+    {
+        $this->developer = $developer;
+
+        return $this;
+    }
+
+    /**
+     * Get developer
+     *
+     * @return string
+     */
+    public function getDeveloper()
+    {
+        return $this->developer;
+    }
+
+    /**
+     * Set version
+     *
+     * @param integer $version
+     *
+     * @return Game
+     */
+    public function setVersion($version)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * Get version
+     *
+     * @return integer
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
 
     /**
      * Add registration
@@ -201,29 +234,5 @@ class Game {
     public function getRegistrations()
     {
         return $this->registrations;
-    }
-
-    /**
-     * Set version
-     *
-     * @param integer $version
-     *
-     * @return Game
-     */
-    public function setVersion($version)
-    {
-        $this->version = $version;
-
-        return $this;
-    }
-
-    /**
-     * Get version
-     *
-     * @return integer
-     */
-    public function getVersion()
-    {
-        return $this->version;
     }
 }

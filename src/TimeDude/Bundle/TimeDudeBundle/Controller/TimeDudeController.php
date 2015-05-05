@@ -17,7 +17,7 @@ use RMS\PushNotificationsBundle\Message\MessageInterface;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\File\File;
 use JMS\Serializer\SerializationContext;
-use TimeDude\Bundle\TimeDudeBundle\Entity\Reward;
+use TimeDude\Bundle\TimeDudeBundle\Entity\Ammount;
 use TimeDude\Bundle\TimeDudeBundle\Entity\Registration;
 use TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser;
 use TimeDude\Bundle\UserBundle\Entity\User;
@@ -147,33 +147,34 @@ class TimeDudeController extends FOSRestController {
             return $response;
         }
 
-        
-       
-        
-        
-        $reward = new Reward();
-        $reward->setAmmount($ammount);
-        $reward->setUser($user);
-        $reward->setRewardtype($rewardType);
-        $reward->setGame($game);
-        $reward->setDate($date);
-        $reward->setHttpcallby($http_call_by);
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($reward);
-        $em->flush();
 
-        if ($ammount > 0) {
-            $lost_receive = 'received';
+
+        $reward_ammount = $this->getDoctrine()->getRepository('TimeDudeBundle:Ammount')->findOneBy([
+            'game' => $game,
+            'user' => $user,
+            'rewardtype' => $rewardType
+        ]);
+
+        $em = $this->getDoctrine()->getManager();
+
+        if ($reward_ammount) {
+
+            $old_ammount = $reward_ammount->getAmmount();
+            $new_ammount = $old_ammount + $ammount;
+            $reward_ammount->setAmmount($new_ammount);
+            $em->flush();
         } else {
-            $lost_receive = 'lost';
+            $reward_ammount = new Ammount();
+            $reward_ammount->setAmmount($ammount);
+            $reward_ammount->setUser($user);
+            $reward_ammount->setRewardtype($rewardType);
+            $reward_ammount->setGame($game);
+            $em->persist($reward_ammount);
+            $em->flush();
         }
 
-
+//        die('verify');
         // Send the Push Notification to the Google Cloud.
-
-
-       
-
         $apikey = $game->getGcmApiKey();
         $registrations = $this->getDoctrine()->getRepository('TimeDudeBundle:Registration')->findBy([
             'user' => $user,
@@ -194,12 +195,8 @@ class TimeDudeController extends FOSRestController {
             $registration_ids[] = $registration->getRegistrationId();
         }
 
-
-        
-        
-        
         $data = array(
-            'message' => 'You received '. $ammount * 77 .' coins.',
+            'message' => 'You received ' . $ammount * 77 . ' coins.',
             'ammount' => $ammount,
             'collapse_key' => 'do_not_collapse',
             'vib' => 1,
@@ -211,27 +208,214 @@ class TimeDudeController extends FOSRestController {
             $notify_responses[] = json_decode(self::notifyAndroidNew($registration_id, $data, $apikey), true);
         }
 
-
         //If any of the notify Responses return FALSE , check the ERROR , and if it is 
         // INVALID REGISTRATION , REMOVE THE REGISTRATION FROM OUR DATABASE ?
         $registration_keys_to_remove = array();
-        
+
         foreach ($notify_responses as $notify_response) {
             if ($notify_response['success'] == false) {
-//                die("IT IZ FALSE");
-                if($notify_response['results'][0]['error'] == "InvalidRegistration"){
+                if ($notify_response['results'][0]['error'] == "InvalidRegistration") {
                     $registration_keys_to_remove[] = $registration_id;
                 }
             }
         }
 
+        $response->setStatusCode(201);
+        $response->setContent(json_encode(array(
+            'success' => true,
+            'message' => 'User ' . $user->getEmail() . ' received ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $game->getName(),
+            'notify_responses' => $notify_responses,
+            'should_be_removed' => $registration_keys_to_remove
+        )));
+        return $response;
+    }
+
+    /**
+     * @Route("/spendItems", name="spendItems")
+     * @Method("Post")
+     *
+     * @ApiDoc(
+     *      deprecated=FALSE,
+     * 		description = "Call used to add items to a user in a specified game",
+     *      section="RedeemItems",
+     * 		statusCodes = {
+     * 			201 = "User Has Been Rewarded / Penalized",
+     * 			200 = "User not found / Other Errors.",
+     *                  500 = "No token / Invalid API KEY",
+     * 		},
+     *      parameters={
+     *          {"name"="userId", "dataType"="string", "required"=true, "description"="The user's google id."},
+     *          {"name"="gameId", "dataType"="string", "required"=true, "description"="The id of the game."},
+     *          {"name"="itemId", "dataType"="string", "required"=true, "description"="The id of the item to add."},
+     *          {"name"="ammount", "dataType"="integer", "required"=true, "description"="The ammount of items to add."},
+     * }
+     * 		
+     * )
+     *
+     */
+    public function postSpendItemsAction(Request $request) {
+
+        $user_making_the_call = $this->getUser();
+        $http_call_by = $user_making_the_call->getUsername();
+
+        $date = new \DateTime();
+        $response = new Response();
+
+        $userId = $request->get('userId');
+        $gameId = $request->get('gameId');
+        $itemId = $request->get('itemId');
+        $ammount = $request->get('ammount');
+
+
+        if (empty($userId) || empty($gameId) || empty($itemId) || empty($ammount)) {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'Parameters are wrong or missing.'
+            )));
+            return $response;
+        }
+        $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
+
+        if (!$user) {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'The user id provided is wrong. (no such user in the db)'
+            )));
+            return $response;
+        }
+
+        $rewardType = $this->getDoctrine()->getRepository('TimeDudeBundle:RewardType')->findOneById($itemId);
+
+        if (!$rewardType) {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'Invalid reward type / itemId'
+            )));
+            return $response;
+        }
+
+        $game = $this->getDoctrine()->getRepository('TimeDudeBundle:Game')->findOneById($gameId);
+
+        if (!$game) {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'Invalid game.'
+            )));
+            return $response;
+        }
+
+        $spent_ammount = $ammount * -1;
+
+
+
+
+        $reward_ammount = $this->getDoctrine()->getRepository('TimeDudeBundle:Ammount')->findOneBy([
+            'game' => $game,
+            'user' => $user,
+            'rewardtype' => $rewardType
+        ]);
+
+        $em = $this->getDoctrine()->getManager();
+
+        if ($reward_ammount) {
+
+            if ($reward_ammount->getAmmount() >= $spent_ammount) {
+
+
+                $old_ammount = $reward_ammount->getAmmount();
+                $new_ammount = $old_ammount + $spent_ammount;
+                $reward_ammount->setAmmount($new_ammount);
+                $em->flush();
+            } else {
+                $response->setStatusCode(200);
+                $response->setContent(json_encode(array(
+                    'success' => false,
+                    'message' => 'You cannot spend more than you have.'
+                )));
+                return $response;
+            }
+        } else {
+            $response->setStatusCode(200);
+            $response->setContent(json_encode(array(
+                'success' => false,
+                'message' => 'You do not have any rewards for this game.'
+            )));
+            return $response;
+        }
+
+//        die('verify');
+
+
+
+
+//
+//        $reward = new Reward();
+//        $reward->setAmmount($spent_ammount);
+//        $reward->setUser($user);
+//        $reward->setRewardtype($rewardType);
+//        $reward->setGame($game);
+//        $reward->setDate($date);
+//        $reward->setHttpcallby($http_call_by);
+//        $em = $this->getDoctrine()->getManager();
+//        $em->persist($reward);
+//        $em->flush();
+        // Send the Push Notification to the Google Cloud.
+//        $apikey = $game->getGcmApiKey();
+//        $registrations = $this->getDoctrine()->getRepository('TimeDudeBundle:Registration')->findBy([
+//            'user' => $user,
+//            'game' => $game,
+//            'game_version' => $game->getVersion()
+//        ]);
+//
+//        if (!$registrations) {
+//            $response->setStatusCode(200);
+//            $response->setContent(json_encode(array(
+//                'success' => false,
+//                'message' => 'This user is not registered with any device for this game.'
+//            )));
+//            return $response;
+//        }
+////        $registration_ids = array();
+//        foreach ($registrations as $registration) {
+//            $registration_ids[] = $registration->getRegistrationId();
+//        }
+//        $data = array(
+//            'message' => 'You received ' . $ammount * 77 . ' coins.',
+//            'ammount' => $ammount,
+//            'collapse_key' => 'do_not_collapse',
+//            'vib' => 1,
+//            'pw_msg' => 1,
+//            'p' => 5);
+//        $notify_responses = array();
+//        foreach ($registration_ids as $registration_id) {
+//            $notify_responses[] = json_decode(self::notifyAndroidNew($registration_id, $data, $apikey), true);
+//        }
+//
+//
+//        //If any of the notify Responses return FALSE , check the ERROR , and if it is 
+//        // INVALID REGISTRATION , REMOVE THE REGISTRATION FROM OUR DATABASE ?
+//        $registration_keys_to_remove = array();
+//
+//        foreach ($notify_responses as $notify_response) {
+//            if ($notify_response['success'] == false) {
+////                die("IT IZ FALSE");
+//                if ($notify_response['results'][0]['error'] == "InvalidRegistration") {
+//                    $registration_keys_to_remove[] = $registration_id;
+//                }
+//            }
+//        }
+
 
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'User ' . $user->getId() . ' ' . $lost_receive . ' ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $game->getName(),
-            'notify_responses' => $notify_responses,
-            'should_be_removed' => $registration_keys_to_remove
+            'message' => 'User ' . $user->getId() . ' spent ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $game->getName(),
+//            'notify_responses' => $notify_responses,
+//            'should_be_removed' => $registration_keys_to_remove
         )));
         return $response;
     }
@@ -617,6 +801,7 @@ class TimeDudeController extends FOSRestController {
         )));
         return $response;
     }
+
 //
 //    /**
 //     * This function uses RMS push notification bundle to send a push notification to the android device.
@@ -704,5 +889,4 @@ class TimeDudeController extends FOSRestController {
 //
 //        return self::notifyAndroidNew($registration_id, $data, $apiKey);
 //    }
-
 }
