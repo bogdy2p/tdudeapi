@@ -148,16 +148,11 @@ class TimeDudeController extends FOSRestController {
         }
 
         
-        //TimeDude Specific
-        $final_ammount = $ammount;
-        if (($game->getName()) === 'Time Dude'){
-            $final_ammount = $ammount * 77; 
-        }
-        
+       
         
         
         $reward = new Reward();
-        $reward->setAmmount($final_ammount);
+        $reward->setAmmount($ammount);
         $reward->setUser($user);
         $reward->setRewardtype($rewardType);
         $reward->setGame($game);
@@ -167,7 +162,7 @@ class TimeDudeController extends FOSRestController {
         $em->persist($reward);
         $em->flush();
 
-        if ($final_ammount > 0) {
+        if ($ammount > 0) {
             $lost_receive = 'received';
         } else {
             $lost_receive = 'lost';
@@ -204,8 +199,8 @@ class TimeDudeController extends FOSRestController {
         
         
         $data = array(
-            'message' => 'You received '. $final_ammount .' coins.',
-            'ammount' => $final_ammount,
+            'message' => 'You received '. $ammount * 77 .' coins.',
+            'ammount' => $ammount,
             'collapse_key' => 'do_not_collapse',
             'vib' => 1,
             'pw_msg' => 1,
@@ -234,7 +229,7 @@ class TimeDudeController extends FOSRestController {
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'User ' . $user->getId() . ' ' . $lost_receive . ' ' . abs($final_ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $game->getName(),
+            'message' => 'User ' . $user->getId() . ' ' . $lost_receive . ' ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $game->getName(),
             'notify_responses' => $notify_responses,
             'should_be_removed' => $registration_keys_to_remove
         )));
