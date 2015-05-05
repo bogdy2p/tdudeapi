@@ -474,7 +474,7 @@ class TimeDudeController extends FOSRestController {
     }
 
     /**
-     * @Route("/usergameinfo/{userId}/{gameId}", name="get_user_information_specific_game")
+     * @Route("/usergameinfo/{userId}/{gameId}/{rewardTypeId}", name="get_user_information_specific_game")
      * @Method("Get")
      *
      * @ApiDoc(
