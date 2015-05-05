@@ -83,7 +83,7 @@ class TimeDudeController extends FOSRestController {
      *                  500 = "No token / Invalid API KEY",
      * 		},
      *      parameters={
-     *          {"name"="userId", "dataType"="string", "required"=true, "description"="The user's google id."},
+     *          {"name"="googleUid", "dataType"="string", "required"=true, "description"="The user's google id."},
      *          {"name"="gameId", "dataType"="string", "required"=true, "description"="The id of the game."},
      *          {"name"="itemId", "dataType"="string", "required"=true, "description"="The id of the item to add."},
      *          {"name"="ammount", "dataType"="integer", "required"=true, "description"="The ammount of items to add."},
@@ -100,7 +100,7 @@ class TimeDudeController extends FOSRestController {
         $date = new \DateTime();
         $response = new Response();
 
-        $userId = $request->get('userId');
+        $userId = $request->get('googleUid');
         $gameId = $request->get('gameId');
         $itemId = $request->get('itemId');
         $ammount = $request->get('ammount');
@@ -244,7 +244,7 @@ class TimeDudeController extends FOSRestController {
      *                  500 = "No token / Invalid API KEY",
      * 		},
      *      parameters={
-     *          {"name"="userId", "dataType"="string", "required"=true, "description"="The user's google id."},
+     *          {"name"="googleUid", "dataType"="string", "required"=true, "description"="The user's google id."},
      *          {"name"="gameId", "dataType"="string", "required"=true, "description"="The id of the game."},
      *          {"name"="itemId", "dataType"="string", "required"=true, "description"="The id of the item to add."},
      *          {"name"="ammount", "dataType"="integer", "required"=true, "description"="The ammount of items to add."},
@@ -261,9 +261,9 @@ class TimeDudeController extends FOSRestController {
         $date = new \DateTime();
         $response = new Response();
 
-        $userId = $request->get('userId');
-        $gameId = $request->get('gameId');
-        $itemId = $request->get('itemId');
+        $userId =  $request->get('googleUid');
+        $gameId =  $request->get('gameId');
+        $itemId =  $request->get('itemId');
         $ammount = $request->get('ammount');
 
 
@@ -350,63 +350,7 @@ class TimeDudeController extends FOSRestController {
         return $response;
     }
 
-    /**
-     * @Route("/userInformation/{userId}", name="get_user_information")
-     * @Method("Get")
-     *
-     * @ApiDoc(
-     *      deprecated=FALSE,
-     * 		description = "Get User Information + Coin ammount.",
-     *      section="Z DEVELOPMENT Z",
-     * 		statusCodes = {
-     * 			200 = "User Exists",
-     * 			404 = "User not found."
-     * 		},
-     *      requirements= {
-     * 		 {"name" = "userId", "requirement" = "true"}
-     * 		}
-     * )
-     *
-     */
-    public function getUserInformationAction($userId) {
-
-        $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
-        $response = new Response();
-
-        if (!$user) {
-            $response->setStatusCode(200);
-            $response->setContent(json_encode(array(
-                'success' => false,
-                'message' => 'The user id provided is wrong.'
-            )));
-            return $response;
-        }
-
-
-        $registrations = $user->getRegistrations();
-        $user_information = array();
-
-
-        $user_information['email'] = $user->getEmail();
-        $user_information['name'] = $user->getFirstname() . ' ' . $user->getLastname();
-        $user_information['total_devices'] = count($registrations);
-
-        foreach ($registrations as $registration) {
-            $user_information['device_ids'][] = $registration->getDeviceId();
-        }
-
-
-
-
-        $response = new Response();
-        $response->setStatusCode(200);
-        $response->setContent(json_encode(array(
-            'success' => true,
-            'message' => $user_information
-        )));
-        return $response;
-    }
-
+   
     /**
      * @Route("/usergameinfo/{userId}/{gameId}/{rewardTypeId}", name="get_user_information_specific_game")
      * @Method("Get")
@@ -507,50 +451,7 @@ class TimeDudeController extends FOSRestController {
         return $response;
     }
 
-    /**
-     * @Route("/list_database_informations", name="list_db_information")
-     * @Method("GET")
-     *
-     * @ApiDoc(
-     *      deprecated=TRUE,
-     * 		description = "Returns a list of all the users in the system. (DEVELOPMENT ONLY / WILL BE DISABLED)",
-     *      section="Z DEVELOPMENT Z",
-     * 		statusCodes = {
-     * 			200 = "Ok",
-     * 		},
-     * )
-     *
-     */
-    public function getDbInformationAction() {
-
-        $response = new Response();
-        $users = $this->getDoctrine()->getRepository("TimeDudeBundle:TimeDudeUser")->findAll();
-        $games = $this->getDoctrine()->getRepository("TimeDudeBundle:Game")->findAll();
-        $reward_types = $this->getDoctrine()->getRepository("TimeDudeBundle:RewardType")->findAll();
-
-        $return_array = array();
-
-        foreach ($users as $user) {
-            $return_array['users'][ucfirst($user->getGoogleUid())] = $user->getFirstname() . ' ' . $user->getEmail();
-        }
-
-        foreach ($games as $game) {
-            $return_array['games'][ucfirst($game->getId())] = $game->getName();
-        }
-
-        foreach ($reward_types as $reward_type) {
-            $return_array['rewards'][ucfirst($reward_type->getId())] = $reward_type->getName();
-        }
-
-        $response->setStatusCode(200);
-        $response->setContent(json_encode(array(
-            'success' => true,
-            'message' => 'Listing Database Informations ',
-            'informations' => $return_array
-        )));
-        return $response;
-    }
-
+   
     /**
      * @Route("/newuser", name="new_google_user")
      * @Method("Post")
@@ -670,11 +571,11 @@ class TimeDudeController extends FOSRestController {
         $date = new \DateTime();
         $response = new Response();
 
-        $googleUid = $request->get('googleUid');
-        $deviceId = $request->get('deviceId');
-        $registrationKey = $request->get('registrationKey');
-        $gameId = $request->get('gameId');
-        $version = $request->get('game_version');
+        $googleUid =        $request->get('googleUid');
+        $deviceId =         $request->get('deviceId');
+        $registrationKey =  $request->get('registrationKey');
+        $gameId =           $request->get('gameId');
+        $version =          $request->get('game_version');
 
 
         if (empty($googleUid) || empty($registrationKey) || empty($gameId) || empty($version) || empty($deviceId)) {
