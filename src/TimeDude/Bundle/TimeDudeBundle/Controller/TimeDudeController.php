@@ -147,10 +147,17 @@ class TimeDudeController extends FOSRestController {
             return $response;
         }
 
-
-
+        
+        //TimeDude Specific
+        $final_ammount = $ammount;
+        if (($game->getName()) === 'Time Dude'){
+            $final_ammount = $ammount * 77; 
+        }
+        
+        
+        
         $reward = new Reward();
-        $reward->setAmmount($ammount);
+        $reward->setAmmount($final_ammount);
         $reward->setUser($user);
         $reward->setRewardtype($rewardType);
         $reward->setGame($game);
@@ -160,7 +167,7 @@ class TimeDudeController extends FOSRestController {
         $em->persist($reward);
         $em->flush();
 
-        if ($ammount > 0) {
+        if ($final_ammount > 0) {
             $lost_receive = 'received';
         } else {
             $lost_receive = 'lost';
@@ -170,7 +177,7 @@ class TimeDudeController extends FOSRestController {
         // Send the Push Notification to the Google Cloud.
 
 
-        $message = "Redeem Items";
+       
 
         $apikey = $game->getGcmApiKey();
         $registrations = $this->getDoctrine()->getRepository('TimeDudeBundle:Registration')->findBy([
@@ -193,9 +200,12 @@ class TimeDudeController extends FOSRestController {
         }
 
 
+        
+        
+        
         $data = array(
-            'message' => $message,
-            'title' => 'Coin ammount changed.',
+            'message' => 'You received '. $final_ammount .' coins.',
+            'ammount' => $final_ammount,
             'collapse_key' => 'do_not_collapse',
             'vib' => 1,
             'pw_msg' => 1,
@@ -224,7 +234,7 @@ class TimeDudeController extends FOSRestController {
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'User ' . $user->getId() . ' ' . $lost_receive . ' ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $game->getName(),
+            'message' => 'User ' . $user->getId() . ' ' . $lost_receive . ' ' . abs($final_ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $game->getName(),
             'notify_responses' => $notify_responses,
             'should_be_removed' => $registration_keys_to_remove
         )));
@@ -612,27 +622,27 @@ class TimeDudeController extends FOSRestController {
         )));
         return $response;
     }
-
-    /**
-     * This function uses RMS push notification bundle to send a push notification to the android device.
-     * 
-     * @param type $registrationId
-     * @param type $data
-     * @return type
-     * 
-     */
-    public function notifyAndroid($registrationId, $data) {
-
-
-
-        $push_message = new AndroidMessage();
-        $push_message->setGCM(true);
-        $push_message->setDeviceIdentifier($registrationId);
-        $push_message->setData($data);
-        $RMS = $this->container->get('rms_push_notifications')->send($push_message);
-
-        return $RMS;
-    }
+//
+//    /**
+//     * This function uses RMS push notification bundle to send a push notification to the android device.
+//     * 
+//     * @param type $registrationId
+//     * @param type $data
+//     * @return type
+//     * 
+//     */
+//    public function notifyAndroid($registrationId, $data) {
+//
+//
+//
+//        $push_message = new AndroidMessage();
+//        $push_message->setGCM(true);
+//        $push_message->setDeviceIdentifier($registrationId);
+//        $push_message->setData($data);
+//        $RMS = $this->container->get('rms_push_notifications')->send($push_message);
+//
+//        return $RMS;
+//    }
 
     public function notifyAndroidNew($registrationId, $data, $apiKey) {
 
