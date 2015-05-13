@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use JMS\Serializer\SerializationContext;
 use TimeDude\Bundle\TimeDudeBundle\Entity\Ammount;
 use TimeDude\Bundle\TimeDudeBundle\Entity\Registration;
+use TimeDude\Bundle\TimeDudeBundle\Entity\RewardLog;
 use TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser;
 use TimeDude\Bundle\UserBundle\Entity\User;
 
@@ -162,7 +163,7 @@ class TimeDudeController extends FOSRestController {
             $old_ammount = $reward_ammount->getAmmount();
             $new_ammount = $old_ammount + $ammount;
             $reward_ammount->setAmmount($new_ammount);
-            $em->flush();
+            
         } else {
             $reward_ammount = new Ammount();
             $reward_ammount->setAmmount($ammount);
@@ -170,9 +171,20 @@ class TimeDudeController extends FOSRestController {
             $reward_ammount->setRewardtype($rewardType);
             $reward_ammount->setGame($game);
             $em->persist($reward_ammount);
-            $em->flush();
+            
         }
-
+        
+        $rewardLog = new RewardLog();
+        $rewardLog->setAmmount($ammount);
+        $rewardLog->setDate($date);
+        $rewardLog->setGame($game);
+        $rewardLog->setRewardtype($rewardType);
+        $rewardLog->setHttpcallby($http_call_by);
+        $rewardLog->setUser($user);
+        $rewardLog->setAction('Received');
+        $em->persist($rewardLog);
+        $em->flush();
+        
 //        die('verify');
         // Send the Push Notification to the Google Cloud.
         $apikey = $game->getGcmApiKey();
@@ -220,6 +232,9 @@ class TimeDudeController extends FOSRestController {
             }
         }
 
+        
+    
+        
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
@@ -340,12 +355,21 @@ class TimeDudeController extends FOSRestController {
             )));
             return $response;
         }
-
+        $rewardLog = new RewardLog();
+        $rewardLog->setAmmount($ammount);
+        $rewardLog->setDate($date);
+        $rewardLog->setGame($game);
+        $rewardLog->setRewardtype($rewardType);
+        $rewardLog->setHttpcallby($http_call_by);
+        $rewardLog->setUser($user);
+        $rewardLog->setAction('Spent');
+        $em->persist($rewardLog);
+        $em->flush();
 
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
-            'message' => 'User ' . $user->getId() . ' spent ' . abs($ammount) . ' items of type ' . ucfirst($rewardType->getName()) . ' for game ' . $game->getName(),
+            'message' => 'User ' . $user->getId() . ' spent ' . abs($ammount) . ' items of type ' . $rewardType->getName() . ' for game ' . $game->getName(),
         )));
         return $response;
     }
@@ -360,8 +384,8 @@ class TimeDudeController extends FOSRestController {
      * 		description = "Get User Information + Coin ammount.",
      *      section="User",
      * 		statusCodes = {
-     * 			200 = "User Exists",
-     * 			404 = "User not found."
+     * 			200 = "All codes are 200.",
+     * 			
      * 		},
      *      requirements = {
      *          {"name" = "userId", "requirement" = "true"},

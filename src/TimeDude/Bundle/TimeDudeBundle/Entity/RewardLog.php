@@ -68,6 +68,12 @@ class RewardLog {
      */
     private $rewardtype;
 
+     /**
+     * @var string
+     *
+     * @ORM\Column(name="action", type="string", length=255, nullable=false)
+     */
+    private $action;
 
    
 
@@ -223,5 +229,29 @@ class RewardLog {
     public function getRewardtype()
     {
         return $this->rewardtype;
+    }
+
+    /**
+     * Set action
+     *
+     * @param string $action
+     *
+     * @return RewardLog
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+
+        return $this;
+    }
+
+    /**
+     * Get action
+     *
+     * @return string
+     */
+    public function getAction()
+    {
+        return $this->action;
     }
 }
