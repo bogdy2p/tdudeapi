@@ -18,6 +18,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\File\File;
 use JMS\Serializer\SerializationContext;
 use TimeDude\Bundle\TimeDudeBundle\Entity\Ammount;
+use TimeDude\Bundle\TimeDudeBundle\Entity\ActionLog;
 use TimeDude\Bundle\TimeDudeBundle\Entity\Registration;
 use TimeDude\Bundle\TimeDudeBundle\Entity\RewardLog;
 use TimeDude\Bundle\TimeDudeBundle\Entity\TimeDudeUser;
@@ -49,6 +50,9 @@ class TimeDudeController extends FOSRestController {
     public function getUserexistsAction($userId) {
 
 
+
+
+
         $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
         $response = new Response();
 
@@ -59,6 +63,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => true,
                 'message' => 'User found'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -67,6 +74,9 @@ class TimeDudeController extends FOSRestController {
             'success' => false,
             'message' => 'User not found.'
         )));
+        if ($this->container->getParameter('call_logging') == true) {
+            self::logAction($response);
+        }
         return $response;
     }
 
@@ -113,6 +123,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'Parameters are wrong or missing.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
         $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
@@ -123,6 +136,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'The user id provided is wrong. (no such user in the db)'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -134,6 +150,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'Invalid reward type / itemId'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -145,6 +164,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'Invalid game.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -163,7 +185,6 @@ class TimeDudeController extends FOSRestController {
             $old_ammount = $reward_ammount->getAmmount();
             $new_ammount = $old_ammount + $ammount;
             $reward_ammount->setAmmount($new_ammount);
-            
         } else {
             $reward_ammount = new Ammount();
             $reward_ammount->setAmmount($ammount);
@@ -171,9 +192,8 @@ class TimeDudeController extends FOSRestController {
             $reward_ammount->setRewardtype($rewardType);
             $reward_ammount->setGame($game);
             $em->persist($reward_ammount);
-            
         }
-        
+
         $rewardLog = new RewardLog();
         $rewardLog->setAmmount($ammount);
         $rewardLog->setDate($date);
@@ -184,7 +204,7 @@ class TimeDudeController extends FOSRestController {
         $rewardLog->setAction('Received');
         $em->persist($rewardLog);
         $em->flush();
-        
+
 //        die('verify');
         // Send the Push Notification to the Google Cloud.
         $apikey = $game->getGcmApiKey();
@@ -200,6 +220,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'This user is not registered with any device for this game.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
         $registration_ids = array();
@@ -232,9 +255,9 @@ class TimeDudeController extends FOSRestController {
             }
         }
 
-        
-    
-        
+
+
+
         $response->setStatusCode(201);
         $response->setContent(json_encode(array(
             'success' => true,
@@ -242,6 +265,9 @@ class TimeDudeController extends FOSRestController {
             'notify_responses' => $notify_responses,
             'should_be_removed' => $registration_keys_to_remove
         )));
+        if ($this->container->getParameter('call_logging') == true) {
+            self::logAction($response);
+        }
         return $response;
     }
 
@@ -276,9 +302,9 @@ class TimeDudeController extends FOSRestController {
         $date = new \DateTime();
         $response = new Response();
 
-        $userId =  $request->get('googleUid');
-        $gameId =  $request->get('gameId');
-        $itemId =  $request->get('itemId');
+        $userId = $request->get('googleUid');
+        $gameId = $request->get('gameId');
+        $itemId = $request->get('itemId');
         $ammount = $request->get('ammount');
 
 
@@ -288,6 +314,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'Parameters are wrong or missing.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
         $user = $this->getDoctrine()->getRepository('TimeDudeBundle:TimeDudeUser')->findOneByGoogleUid($userId);
@@ -298,6 +327,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'The user id provided is wrong. (no such user in the db)'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -309,6 +341,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'Invalid reward type / itemId'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -320,6 +355,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'Invalid game.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -345,6 +383,9 @@ class TimeDudeController extends FOSRestController {
                     'success' => false,
                     'message' => 'You cannot spend more than you have.'
                 )));
+                if ($this->container->getParameter('call_logging') == true) {
+                    self::logAction($response);
+                }
                 return $response;
             }
         } else {
@@ -353,6 +394,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'You do not have any rewards for this game.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
         $rewardLog = new RewardLog();
@@ -371,10 +415,12 @@ class TimeDudeController extends FOSRestController {
             'success' => true,
             'message' => 'User ' . $user->getId() . ' spent ' . abs($ammount) . ' items of type ' . $rewardType->getName() . ' for game ' . $game->getName(),
         )));
+        if ($this->container->getParameter('call_logging') == true) {
+            self::logAction($response);
+        }
         return $response;
     }
 
-   
     /**
      * @Route("/usergameinfo/{userId}/{gameId}/{rewardTypeId}", name="get_user_information_specific_game")
      * @Method("Get")
@@ -399,6 +445,7 @@ class TimeDudeController extends FOSRestController {
     public function getRewardInformationForGameAction(Request $request) {
         $response = new Response();
 
+
         $userId = $request->get('userId');
         $gameId = $request->get('gameId');
         $rewardTypeId = $request->get('rewardTypeId');
@@ -409,6 +456,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'Please provide both required request parameters'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -419,6 +469,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'The user id provided is wrong.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -429,6 +482,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'The game id provided is wrong.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -439,6 +495,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'The $rewardType id provided is wrong.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -456,6 +515,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'no $user_information'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -472,10 +534,12 @@ class TimeDudeController extends FOSRestController {
             'success' => true,
             'message' => $user_information
         )));
+        if ($this->container->getParameter('call_logging') == true) {
+            self::logAction($response);
+        }
         return $response;
     }
 
-   
     /**
      * @Route("/newuser", name="new_google_user")
      * @Method("Post")
@@ -504,6 +568,7 @@ class TimeDudeController extends FOSRestController {
      */
     public function postNewGameUserAction(Request $request) {
 
+
         $user_making_the_call = $this->getUser();
         $http_call_by = $user_making_the_call->getUsername();
 
@@ -527,6 +592,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'GoogleId , and Email are required.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -538,6 +606,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'An user already exists for the specified google id'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -560,6 +631,9 @@ class TimeDudeController extends FOSRestController {
             'success' => true,
             'message' => 'A user for acccount ' . $email . ' has been registered.'
         )));
+        if ($this->container->getParameter('call_logging') == true) {
+            self::logAction($response);
+        }
         return $response;
     }
 
@@ -588,6 +662,7 @@ class TimeDudeController extends FOSRestController {
      */
     public function putUserGameRegistrationAction(Request $request) {
 
+
         $user_making_the_call = $this->getUser();
         $http_call_by = $user_making_the_call->getUsername();
 
@@ -595,11 +670,11 @@ class TimeDudeController extends FOSRestController {
         $date = new \DateTime();
         $response = new Response();
 
-        $googleUid =        $request->get('googleUid');
-        $deviceId =         $request->get('deviceId');
-        $registrationKey =  $request->get('registrationKey');
-        $gameId =           $request->get('gameId');
-        $version =          $request->get('game_version');
+        $googleUid = $request->get('googleUid');
+        $deviceId = $request->get('deviceId');
+        $registrationKey = $request->get('registrationKey');
+        $gameId = $request->get('gameId');
+        $version = $request->get('game_version');
 
 
         if (empty($googleUid) || empty($registrationKey) || empty($gameId) || empty($version) || empty($deviceId)) {
@@ -608,6 +683,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'Parameters missing.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -618,6 +696,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'Google Uid is invalid'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -628,6 +709,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => false,
                 'message' => 'Game Id is invalid.'
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -657,6 +741,9 @@ class TimeDudeController extends FOSRestController {
                 'success' => true,
                 'message' => 'User ' . $user->getGoogleUid() . ' has registered device ' . $deviceId . ' for game ' . $game->getName() . ' version ' . $version
             )));
+            if ($this->container->getParameter('call_logging') == true) {
+                self::logAction($response);
+            }
             return $response;
         }
 
@@ -671,6 +758,9 @@ class TimeDudeController extends FOSRestController {
             'success' => true,
             'message' => 'Existing registration updated for user ' . $user->getGoogleUid() . ' and device ' . $deviceId
         )));
+        if ($this->container->getParameter('call_logging') == true) {
+            self::logAction($response);
+        }
         return $response;
     }
 
@@ -722,6 +812,31 @@ class TimeDudeController extends FOSRestController {
         curl_close($ch);
 
         return $result;
+    }
+
+    public function logAction($response) {
+
+        $response_text = $response->getContent();
+        $json = json_decode($response_text);
+        $success = $json->success;
+        
+        $actionLogEntry = new ActionLog();
+        
+        $method = $_SERVER['REQUEST_METHOD'];
+        $ip_adress = $_SERVER['REMOTE_ADDR'];
+        $date = new \DateTime();
+        $full_url = $_SERVER['REQUEST_URI'];
+        $redirect_status = $_SERVER['REDIRECT_STATUS'];
+        $actionLogEntry->setCallType($method);
+        $actionLogEntry->setIpAdress($ip_adress);
+        $actionLogEntry->setDate($date);
+        $actionLogEntry->setFullUrl($full_url);
+        $actionLogEntry->setRedirectStatus($redirect_status);
+        $actionLogEntry->setResponseText($response_text);
+        $actionLogEntry->setCallSuccess($success);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($actionLogEntry);
+        $em->flush();
     }
 
 //    /**
